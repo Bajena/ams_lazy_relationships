@@ -1,0 +1,37 @@
+require: rubocop-rspec
+
+AllCops:
+  Exclude:
+    - db/schema.rb
+    - Gemfile
+  TargetRubyVersion: 2.3
+  TargetRailsVersion: 4.2
+
+Metrics/ClassLength:
+  Max: 300
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Layout/AccessModifierIndentation:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Layout/DotPosition:
+  Enabled: true
+  EnforcedStyle: trailing
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
