@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Bajena/ams_lazy_relationships.svg?branch=master)](https://travis-ci.org/Bajena/ams_lazy_relationships)
+
 # AmsLazyRelationships
 
 Eliminates N+1 queries problem in Active Model Serializers gem
