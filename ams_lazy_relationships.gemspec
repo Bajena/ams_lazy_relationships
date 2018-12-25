@@ -37,12 +37,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
 
   # s.add_development_dependency "appraisal"
+  spec.add_development_dependency "activerecord"
   spec.add_development_dependency "active_model_serializers", "~> 0.10.0.rc4"
   spec.add_development_dependency "sqlite3", "~> 1.3"
-  spec.add_development_dependency 'rspec-rails', '~> 3.5'
+  spec.add_development_dependency "rspec-rails", "~> 3.5"
 
   # Dynamically build an Active Record model (with table) within a test context
-  spec.add_development_dependency 'with_model',  '~> 2.0'
+  spec.add_development_dependency "with_model",  "~> 2.0"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-lcov"
 
@@ -50,6 +51,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "undercover"
   spec.add_development_dependency "rubocop", "= 0.61.0"
   spec.add_development_dependency "rubocop-rspec", "= 1.20.1"
+  spec.add_development_dependency "factory_bot"
 
-  spec.add_development_dependency 'pry'
+  spec.add_development_dependency "pry"
+
+  spec.add_dependency "batch-loader", "=1.2.2"
 end
