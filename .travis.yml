@@ -5,7 +5,7 @@ cache: bundler
 rvm:
   - 2.3.4
 before_install:
-  - gem install bundler undercover
+  - gem install bundler undercover --no-doc
   - gem update --system
 script:
   - bundle exec rake
