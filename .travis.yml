@@ -4,4 +4,10 @@ language: ruby
 cache: bundler
 rvm:
   - 2.3.8
-before_install: gem install bundler -v 1.17.1
+before_install:
+  - gem install bundler undercover
+  - gem update --system
+script:
+  - bundle exec rake
+  - git pull origin master:master
+  - undercover --compare master
