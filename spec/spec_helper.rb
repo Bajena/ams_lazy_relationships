@@ -14,6 +14,7 @@ require "undercover"
 require "with_model"
 require "batch-loader"
 require "pry"
+require "db-query-matchers"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -40,3 +41,7 @@ RSpec.configure do |config|
   end
 end
 
+DBQueryMatchers.configure do |config|
+  config.ignores = [/SHOW TABLES LIKE/]
+  config.schemaless = true
+end

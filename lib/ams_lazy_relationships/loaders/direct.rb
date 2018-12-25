@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
-# Lazy loads data in a "dumb" way - just executes the provided block when needed
 module AmsLazyRelationships
   module Loaders
+    # Lazy loads data in a "dumb" way - just executes the provided block when needed
     class Direct
-      # include Liidio::Loggable
-
-      # log_tags "v1_loaders", "direct", :relationship_name
 
       # @param relationship_name [Symbol] used for building cache key. Also if the
       #   `load_block` param is `nil` the loader will just call `relationship_name`
@@ -29,6 +26,7 @@ module AmsLazyRelationships
           end
 
           data = data.flatten.compact.uniq
+          # TODO: Log stuff
           # log :info, "[record_ids:#{records.map(&:id).join(', ')}]"
 
           block&.call(data)

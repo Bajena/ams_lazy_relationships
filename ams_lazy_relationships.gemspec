@@ -51,7 +51,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "undercover"
   spec.add_development_dependency "rubocop", "= 0.61.0"
   spec.add_development_dependency "rubocop-rspec", "= 1.20.1"
-  spec.add_development_dependency "factory_bot"
+
+  # Rspec matchers for SQL query counts
+  spec.add_development_dependency "db-query-matchers"
 
   spec.add_development_dependency "pry"
 
