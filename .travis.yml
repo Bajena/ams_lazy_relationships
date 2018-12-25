@@ -3,7 +3,7 @@ sudo: false
 language: ruby
 cache: bundler
 rvm:
-  - 2.3.8
+  - 2.3.4
 before_install:
   - gem install bundler undercover
   - gem update --system
