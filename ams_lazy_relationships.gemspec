@@ -56,6 +56,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "db-query-matchers"
 
   spec.add_development_dependency "pry"
+  spec.add_development_dependency "pry-nav"
 
   spec.add_dependency "batch-loader", "=1.2.2"
 end
