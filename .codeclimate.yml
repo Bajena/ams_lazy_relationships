@@ -20,6 +20,9 @@ plugins:
   rubocop:
     enabled: true
     channel: rubocop-0-51
+    checks:
+      Rubocop/Metrics/LineLength:
+        enabled: false
   bundler-audit:
     enabled: true
   duplication:
