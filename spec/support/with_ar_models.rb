@@ -4,6 +4,12 @@ module WithArModels
       table do |t|
         t.timestamps
       end
+
+      # The model block is the ActiveRecord model’s class body.
+      model do
+        has_many :comments
+        has_many :blog_posts
+      end
     end
 
     with_model :BlogPost do
@@ -29,6 +35,7 @@ module WithArModels
       table do |t|
         t.string :body
         t.belongs_to :blog_post
+        t.belongs_to :user
         t.timestamps
       end
 
