@@ -4,7 +4,6 @@ module AmsLazyRelationships
   module Loaders
     # Lazy loads data in a "dumb" way - just executes the provided block when needed
     class Direct
-
       # @param relationship_name [Symbol] used for building cache key. Also if the
       #   `load_block` param is `nil` the loader will just call `relationship_name`
       #   method on the record being processed.
@@ -16,6 +15,9 @@ module AmsLazyRelationships
       end
 
       # Lazy loads and yields the data when evaluating
+      # @param record [Object] an object for which we're loading the data
+      # @param block [Proc] a block to execute when data is evaluated.
+      #  Loaded data is yielded as a block argument.
       def load(record, &block)
         BatchLoader.for(record).batch(key: cache_key(record)) do |records, loader|
           data = []
@@ -26,8 +28,6 @@ module AmsLazyRelationships
           end
 
           data = data.flatten.compact.uniq
-          # TODO: Log stuff
-          # log :info, "[record_ids:#{records.map(&:id).join(', ')}]"
 
           block&.call(data)
         end

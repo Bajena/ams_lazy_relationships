@@ -2,14 +2,14 @@
 
 module AmsLazyRelationships
   module Loaders
-    # Lazy loads (has_one/has_many/has_many-through/belongs_to) ActiveRecord
+    # Lazy loads (has_one/has_many/has_many_through/belongs_to) ActiveRecord
     # associations for ActiveRecord models
     class Association
       # @param model_class_name [String] The name of AR class for which the
-      #   associations are loaded. E.g. When loading account.company
-      #   it'd be "Company".
+      #   associations are loaded. E.g. When loading comment.blog_post
+      #   it'd be "BlogPost".
       # @param association_name [Symbol] The name of association being loaded
-      #   E.g. When loading account.company it'd be :company
+      #   E.g. When loading comment.blog_post it'd be :blog_post
       def initialize(model_class_name, association_name)
         @model_class_name = model_class_name
         @association_name = association_name
@@ -17,6 +17,10 @@ module AmsLazyRelationships
 
       attr_reader :model_class_name, :association_name
 
+      # Lazy loads and yields the data when evaluating
+      # @param record [Object] an object for which we're loading the data
+      # @param block [Proc] a block to execute when data is evaluated.
+      #  Loaded data is yielded as a block argument.
       def load(record, &block)
         if record.association(association_name.to_sym).loaded?
           data = record.public_send(association_name)
@@ -55,13 +59,7 @@ module AmsLazyRelationships
           loader.call(r, value)
         end
 
-        data = data.flatten.compact.uniq.tap { |d| log_data(d, records_to_preload) }
-      end
-
-      def log_data(data, records_to_preload)
-        # TODO: Fix me
-        # log :info, "record_ids:#{records_to_preload.map(&:id).join(', ')}", \
-        #     "[loaded_ids:#{data.map(&:id).join(', ')}]"
+        data = data.flatten.compact.uniq
       end
 
       def batch_key
