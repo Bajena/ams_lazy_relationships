@@ -1,0 +1,28 @@
+# This is a sample .codeclimate.yml configured for Plugin analysis on Code
+# Climate Platform. For an overview of the Code Climate Platform, see here:
+# https://codeclimate.com/blog/code-climate-platform/
+
+# Under the plugins key, you can configure which plugins will analyze your repo.
+# Each key is a plugin name. For each value, you need to specify enabled: true
+# to enable the plugin as well as any other plugins-specific configuration.
+
+# For more details, see here:
+# http://docs.codeclimate.com/article/289-configuring-your-repository-via-codeclimate-yml#platform
+
+version: "2"
+
+# For a list of all available plugins, see here:
+# https://docs.codeclimate.com/docs/list-of-engines
+
+plugins:
+# to turn on a plugin, add it here and set enabled to `true`
+# to turn off a plugin, set enabled to `false` or remove it
+  rubocop:
+    enabled: true
+    channel: rubocop-0-51
+  bundler-audit:
+    enabled: true
+  duplication:
+    enabled: true
+    exclude_patterns:
+      - spec
