@@ -32,7 +32,7 @@ RSpec.describe AmsLazyRelationships::Loaders::SimpleBelongsTo do
           yielded_data = data
         end
 
-        promise.try(:id)
+        promise.itself
 
         expect(yielded_data).to eq([])
       end
@@ -59,7 +59,7 @@ RSpec.describe AmsLazyRelationships::Loaders::SimpleBelongsTo do
           yielded_data = data
         end
 
-        promise.try(:id)
+        promise.itself
 
         expect(yielded_data).to eq([])
       end
