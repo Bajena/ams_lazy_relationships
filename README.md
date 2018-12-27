@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/Bajena/ams_lazy_relationships.svg?branch=master)](https://travis-ci.org/Bajena/ams_lazy_relationships)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c21b988e09db63396309/maintainability)](https://codeclimate.com/github/Bajena/ams_lazy_relationships/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/c21b988e09db63396309/test_coverage)](https://codeclimate.com/github/Bajena/ams_lazy_relationships/test_coverage)
 
 # AmsLazyRelationships
 
