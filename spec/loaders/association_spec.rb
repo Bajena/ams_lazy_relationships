@@ -18,7 +18,7 @@ RSpec.describe AmsLazyRelationships::Loaders::Association do
       end
 
       it "does not call DB" do
-        expect { loader.load(record).try(:id) }.not_to make_database_queries
+        expect { loader.load(record).itself }.not_to make_database_queries
       end
 
       it "returns the cached relationship" do
@@ -52,7 +52,7 @@ RSpec.describe AmsLazyRelationships::Loaders::Association do
           yielded_data = data
         end
 
-        promise.try(:id)
+        promise.itself
 
         expect(yielded_data).to eq([])
       end

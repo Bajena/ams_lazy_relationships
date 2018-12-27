@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     ams_lazy_relationships (0.1.0)
+      active_model_serializers
       batch-loader (= 1.2.2)
 
 GEM
@@ -138,7 +139,7 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    undercover (0.2.2)
+    undercover (0.2.3)
       imagen (~> 0.1.5)
       rainbow (~> 2.1)
       rugged (~> 0.27.0)
@@ -150,7 +151,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers (~> 0.10.0.rc4)
   activerecord
   ams_lazy_relationships!
   bundler (~> 1.17)
