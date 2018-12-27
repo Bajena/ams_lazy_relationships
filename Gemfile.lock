@@ -139,7 +139,7 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    undercover (0.2.2)
+    undercover (0.2.3)
       imagen (~> 0.1.5)
       rainbow (~> 2.1)
       rugged (~> 0.27.0)

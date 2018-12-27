@@ -157,9 +157,12 @@ module AmsLazyRelationships::Core
     end
 
     def find_reflection(name)
-      # TODO: Check why the following line does not work
-      _reflections.find { |r| r.name.to_sym == name.to_sym }
-      # _reflections[name.to_sym]
+      # In 0.10.3 this private API has changed
+      if Gem::Version.new(ActiveModel::Serializer::VERSION) >= Gem::Version.new("0.10.3")
+        _reflections[name.to_sym]
+      else
+        _reflections.find { |r| r.name.to_sym == name.to_sym }
+      end
     end
   end
 
