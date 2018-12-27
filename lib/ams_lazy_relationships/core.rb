@@ -4,8 +4,8 @@
 # during the serialization. Serializers will first prepare a tree of "promises"
 # for every nested lazy relationship. The relationship promises will be
 # evaluated only when they're requested.
-# E.g. when including `comments.user`: instead of loading a user for each ga
-# token separately it'll gather the tokens and load all their users at once
+# E.g. when including `comments.user`: instead of loading a user for each comment
+# separately it'll gather the comments and load all their users at once
 # when including the users in the response.
 module AmsLazyRelationships::Core
   LAZY_NESTING_LEVELS = 3
