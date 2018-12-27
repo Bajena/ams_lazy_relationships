@@ -35,7 +35,7 @@ module AmsLazyRelationships::Core
     # You can optionally pass a block, just like in standard AMS relationships
     # If block is not present it'll call `lazy_xxx` method where `xxx` is the
     # name of the relationship.
-    %i(has_many belongs_to has_one).each do |relationship_type|
+    %i[has_many belongs_to has_one].each do |relationship_type|
       klass.define_singleton_method(
         "lazy_#{relationship_type}"
       ) do |relationship_name, options = {}, &block|
@@ -139,7 +139,7 @@ module AmsLazyRelationships::Core
     attr_reader :lazy_relationships
 
     def define_lazy_association(type, name, options, block)
-      lazy_relationship_option_keys = %i(load_for loader)
+      lazy_relationship_option_keys = %i[load_for loader]
 
       real_relationship_options = options.except(*lazy_relationship_option_keys)
 

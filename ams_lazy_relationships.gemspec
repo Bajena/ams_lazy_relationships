@@ -33,8 +33,8 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "active_model_serializers"
   spec.add_dependency "batch-loader", "=1.2.2"
-  spec.add_dependency "active_model_serializers", "~> 0.10.0.rc4"
 
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "bundler", "~> 1.17"
