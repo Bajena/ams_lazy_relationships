@@ -158,8 +158,8 @@ module AmsLazyRelationships::Core
 
     def find_reflection(name)
       # TODO: Check why the following line does not work
-      # _reflections.find { |r| r.name.to_sym == name.to_sym }
-      _reflections[name.to_sym]
+      _reflections.find { |r| r.name.to_sym == name.to_sym }
+      # _reflections[name.to_sym]
     end
   end
 
