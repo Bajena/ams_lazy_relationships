@@ -34,7 +34,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "batch-loader", "=1.2.2"
-  spec.add_dependency "activesupport", ">= 3.2.13"
   spec.add_dependency "active_model_serializers", "~> 0.10.0.rc4"
 
   spec.add_development_dependency "activerecord"

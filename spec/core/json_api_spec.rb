@@ -10,12 +10,6 @@ RSpec.describe AmsLazyRelationships::Core do
 
   class BaseTestSerializer < ActiveModel::Serializer
     include AmsLazyRelationships::Core
-
-    def initialize(*)
-      super
-
-      self.class.load_all_lazy_relationships(object)
-    end
   end
 
   let(:user) { User.create! }

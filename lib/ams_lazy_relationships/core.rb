@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "active_support/concern"
-
 # This module defines a set of methods useful for eliminating N+1 query problem
 # during the serialization. Serializers will first prepare a tree of "promises"
 # for every nested lazy relationship. The relationship promises will be
@@ -11,8 +9,6 @@ require "active_support/concern"
 # when including the users in the response.
 module AmsLazyRelationships::Core
   LAZY_NESTING_LEVELS = 3
-
-  extend ActiveSupport::Concern
 
   class LazyRelationshipMeta
     def initialize(name:, loader:, reflection:, load_for: nil)
@@ -25,7 +21,10 @@ module AmsLazyRelationships::Core
     attr_reader :name, :loader, :reflection, :load_for
   end
 
-  included do
+  def self.included(klass)
+    klass.send :extend, ClassMethods
+    klass.send :prepend, Initializer
+
     # # Convenience methods - wraps `has_many/belongs_to/has_one` and defines a
     # lazy_has_many, lazy_has_one and lazy_belongs_to.
     #
@@ -37,7 +36,7 @@ module AmsLazyRelationships::Core
     # If block is not present it'll call `lazy_xxx` method where `xxx` is the
     # name of the relationship.
     %i(has_many belongs_to has_one).each do |relationship_type|
-      define_singleton_method(
+      klass.define_singleton_method(
         "lazy_#{relationship_type}"
       ) do |relationship_name, options = {}, &block|
         define_lazy_association(
@@ -161,6 +160,14 @@ module AmsLazyRelationships::Core
       # TODO: Check why the following line does not work
       # _reflections.find { |r| r.name.to_sym == name.to_sym }
       _reflections[name.to_sym]
+    end
+  end
+
+  module Initializer
+    def initialize(*)
+      super
+
+      self.class.load_all_lazy_relationships(object)
     end
   end
 end
