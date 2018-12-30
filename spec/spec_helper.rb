@@ -10,7 +10,7 @@ end
 require "bundler/setup"
 require "ams_lazy_relationships"
 
-require "undercover"
+# require "undercover"
 require "with_model"
 require "batch-loader"
 require "pry"
