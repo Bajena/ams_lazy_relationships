@@ -73,10 +73,13 @@ As you may have already noticed the gem makes use of various loader classes.
 I've implemented the following ones for you:
 - `AmsLazyRelationships::Loaders::Association` - Batch loads a ActiveRecord association (has_one/has_many/has_many-through/belongs_to). This is a deafult loader in case you don't specify a `loader` option in your serializer's lazy relationship.
 E.g. in order to lazy load user's blog posts use a following loader: `AmsLazyRelationships::Loaders::Association.new("User", :blog_posts)`.
+
 - `AmsLazyRelationships::Loaders::SimpleBelongsTo` - Batch loads ActiveRecord models using a foreign key method called on a serialized object. E.g. `AmsLazyRelationships::Loaders::SimpleBelongsTo.new("Account")` called on users will gather their `account_id`s and fire one query to get all accounts at once instead of loading an account per user separately. 
 This loader can be useful e.g. when the serialized object is not an ActiveRecord model.
+
 - `AmsLazyRelationships::Loaders::SimpleHasMany` - Batch loads ActiveRecord records belonging to given record by foreign key. E.g. `AmsLazyRelationships::Loaders::SimpleHasMany.new("BlogPosts", foreign_key: :user_id)` called on users will  and fire one query to gather all blog posts for the users at once instead of loading an the blog posts per user separately.
 This loader can be useful e.g. when the serialized object is not an ActiveRecord model.
+
 - `AmsLazyRelationships::Loaders::Direct` - Lazy loads data in a "dumb" way - just executes the provided block when needed. Useful e.g. when the relationship is just a PORO which then in its own serializer needs to lazy load some relationships.
 You can use it like this: `AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object)`.
 
