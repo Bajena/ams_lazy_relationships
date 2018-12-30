@@ -9,6 +9,11 @@
 # when including the users in the response.
 module AmsLazyRelationships::Core
   LAZY_NESTING_LEVELS = 3
+  NESTING_START_LEVEL = 1
+
+  def self.ams_version
+    @_ams_version ||= Gem::Version.new(ActiveModel::Serializer::VERSION)
+  end
 
   class LazyRelationshipMeta
     def initialize(name:, loader:, reflection:, load_for: nil)
@@ -19,6 +24,14 @@ module AmsLazyRelationships::Core
     end
 
     attr_reader :name, :loader, :reflection, :load_for
+
+    def serializer_class
+      if AmsLazyRelationships::Core.ams_version <= Gem::Version.new("0.10.0.rc2")
+        return reflection[:association_options][:serializer]
+      end
+
+      reflection.options[:serializer]
+    end
   end
 
   def self.included(klass)
@@ -86,12 +99,16 @@ module AmsLazyRelationships::Core
       end
     end
 
+    # End of public interface
+
+    attr_reader :lazy_relationships
+
     # Recursively loads the tree of lazy relationships
     # The nesting is limited to 3 levels.
     #
     # @param object [Object] Lazy relationships will be loaded for this record.
     # @param level [Integer] Current nesting level
-    def load_all_lazy_relationships(object, level = 0)
+    def load_all_lazy_relationships(object, level = NESTING_START_LEVEL)
       return if level >= LAZY_NESTING_LEVELS
       return unless object
 
@@ -102,12 +119,10 @@ module AmsLazyRelationships::Core
       end
     end
 
-    # End of public interface
-
     # @param lrm [LazyRelationshipMeta] relationship data
     # @param object [Object] Object to load the relationship for
     # @param level [Integer] Current nesting level
-    def load_lazy_relationship(lrm, object, level = 0)
+    def load_lazy_relationship(lrm, object, level = NESTING_START_LEVEL)
       load_for_object = if lrm.load_for.present?
                           object.public_send(lrm.load_for)
                         else
@@ -128,15 +143,10 @@ module AmsLazyRelationships::Core
       # reflection for this relationship. We can skip deeper lazy loading.
       return unless lrm.reflection
 
-      relationship_serializer_class = lrm.reflection.options[:serializer]
-
       Array.wrap(batch_records).each do |r|
-        relationship_serializer_class.
-          load_all_lazy_relationships(r, level + 1)
+        lrm.serializer_class.load_all_lazy_relationships(r, level + 1)
       end
     end
-
-    attr_reader :lazy_relationships
 
     def define_lazy_association(type, name, options, block)
       lazy_relationship_option_keys = %i[load_for loader]
@@ -157,11 +167,15 @@ module AmsLazyRelationships::Core
     end
 
     def find_reflection(name)
-      # In 0.10.3 this private API has changed
-      if Gem::Version.new(ActiveModel::Serializer::VERSION) >= Gem::Version.new("0.10.3")
+      version = AmsLazyRelationships::Core.ams_version
+      if version >= Gem::Version.new("0.10.3")
+        # In 0.10.3 this private API has changed again
         _reflections[name.to_sym]
-      else
+      elsif version >= Gem::Version.new("0.10.0.rc2")
+        # In 0.10.0.rc2 this private API has changed
         _reflections.find { |r| r.name.to_sym == name.to_sym }
+      else
+        _associations[name.to_sym]
       end
     end
   end
