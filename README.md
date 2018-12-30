@@ -24,7 +24,7 @@ There are a few problems with `includes` approach though:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "ams_lazy_relationships", git: "git@github.com:Bajena/ams_lazy_relationships.git", branch: :master
+gem "ams_lazy_relationships"
 ```
 
 And then execute:
