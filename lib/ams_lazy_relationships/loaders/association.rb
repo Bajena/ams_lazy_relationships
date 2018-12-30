@@ -15,8 +15,6 @@ module AmsLazyRelationships
         @association_name = association_name
       end
 
-      attr_reader :model_class_name, :association_name
-
       # Lazy loads and yields the data when evaluating
       # @param record [Object] an object for which we're loading the data
       # @param block [Proc] a block to execute when data is evaluated.
@@ -32,6 +30,8 @@ module AmsLazyRelationships
       end
 
       private
+
+      attr_reader :model_class_name, :association_name
 
       def lazy_load(record, block)
         BatchLoader.for(record).batch(key: batch_key) do |records, loader|

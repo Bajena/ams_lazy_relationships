@@ -14,8 +14,6 @@ module AmsLazyRelationships
         @foreign_key = foreign_key.to_sym
       end
 
-      attr_reader :association_class_name, :foreign_key
-
       # Lazy loads and yields the data when evaluating
       # @param record [Object] an object for which we're loading the has many data
       # @param block [Proc] a block to execute when data is evaluated.
@@ -32,6 +30,8 @@ module AmsLazyRelationships
       end
 
       private
+
+      attr_reader :association_class_name, :foreign_key
 
       def load_data(records)
         # Some records use UUID class as id - it's safer to cast them to strings
