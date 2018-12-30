@@ -194,7 +194,7 @@ RSpec.describe AmsLazyRelationships::Core do
       let(:includes) { ["level1.level2"] }
 
       before do
-        stub_const("AmsLazyRelationships::Core::LAZY_NESTING_LEVELS", 2)
+        stub_const("AmsLazyRelationships::Core::Evaluation::LAZY_NESTING_LEVELS", 2)
       end
 
       it "doesn't lazy load deeper relationships" do
@@ -284,7 +284,7 @@ RSpec.describe AmsLazyRelationships::Core do
       let(:includes) { ["level1.level2"] }
 
       before do
-        stub_const("AmsLazyRelationships::Core::LAZY_NESTING_LEVELS", 1)
+        stub_const("AmsLazyRelationships::Core::Evaluation::LAZY_NESTING_LEVELS", 1)
       end
 
       it "doesn't lazy load deeper relationships" do
