@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ams_lazy_relationships/core/lazy_relationship_meta"
 
 module AmsLazyRelationships::Core
@@ -47,12 +49,12 @@ module AmsLazyRelationships::Core
       version = AmsLazyRelationships::Core.ams_version
 
       # In 0.10.3 this private API has changed again
-      return _reflections[name.to_sym] if version >= Gem::Version.new("0.10.3")
+      return _reflections[name] if version >= Gem::Version.new("0.10.3")
 
       # In 0.10.0.rc2 this private API has changed
-      return _reflections.find { |r| r.name.to_sym == name.to_sym } if version >= Gem::Version.new("0.10.0.rc2")
+      return _reflections.find { |r| r.name.to_sym == name } if version >= Gem::Version.new("0.10.0.rc2")
 
-      _associations[name.to_sym]
+      _associations[name]
     end
   end
 end
