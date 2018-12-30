@@ -5,7 +5,6 @@ env:
     - CC_TEST_REPORTER_ID=1da1af59767d8c64ae960d5a0ac69089a0fa90e013aedb09e76843f104bec709
 language: ruby
 gemfile:
-  - gemfiles/ams_0.9.gemfile
   - gemfiles/ams_0.10.0.rc4.gemfile
   - gemfiles/ams_0.10.2.gemfile
   - gemfiles/ams_0.10.8.gemfile
