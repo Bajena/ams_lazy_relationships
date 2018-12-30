@@ -4,13 +4,20 @@
 
 # AmsLazyRelationships
 
-Eliminates N+1 queries problem in Active Model Serializers gem thanks to batch loading provided by a great [BatchLoader gem](https://github.com/exAspArk/batch-loader).
+#### What does the gem do?
+Eliminates N+1 queries problem in [Active Model Serializers gem](https://github.com/rails-api/active_model_serializers) thanks to batch loading provided by a great [BatchLoader gem](https://github.com/exAspArk/batch-loader).
 
 The gem provides a module which defines a set of methods useful for eliminating N+1 query problem
 during the serialization. Serializers will first prepare a tree of "promises"
 for every nested lazy relationship. The relationship promises will be
 evaluated only when they're requested.
 E.g. when including `blog_posts.user`: instead of loading a user for each blog post separately it'll gather the blog posts and load all their users at once when including the users in the response.
+
+#### How is it better than Rails' includes/joins methods?
+In many cases it's fine to use [`includes`](https://apidock.com/rails/ActiveRecord/QueryMethods/includes) method provided by Rails. 
+There are a few problems with `includes` approach though:
+- It loads all the records provided in the arguments hash. Often you may not need all the nested records to serialize the data you want. `AmsLazyRelationships` will load only the data you need thanks to lazy evaluation.
+- When the app gets bigger and bigger you'd need to update all the `includes` statements across your app to prevent the N+1 queries problem which quickly becomes impossible.
 
 ## Installation
 
