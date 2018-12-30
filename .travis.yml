@@ -20,7 +20,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - bundle exec appraisal rake spec
+  - bundle exec rake
   - git pull origin master:master
   - undercover --compare master
 after_script:
