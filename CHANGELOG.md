@@ -3,11 +3,14 @@
 ## [0.1.0](https://github.com/Bajena/ams_lazy_relationships/tree/0.1.0) (2018-12-30)
 **Closed issues:**
 
+- Add changelog [\#10](https://github.com/Bajena/ams_lazy_relationships/issues/10)
 - Prepare initial version + test suite [\#2](https://github.com/Bajena/ams_lazy_relationships/issues/2)
 - Test multiple AMS versions [\#1](https://github.com/Bajena/ams_lazy_relationships/issues/1)
 
 **Merged pull requests:**
 
+- Add undercover back [\#12](https://github.com/Bajena/ams_lazy_relationships/pull/12) ([Bajena](https://github.com/Bajena))
+- Add changelog [\#11](https://github.com/Bajena/ams_lazy_relationships/pull/11) ([Bajena](https://github.com/Bajena))
 - Split methods logically, add yard comments and hide unnecessary public methods [\#9](https://github.com/Bajena/ams_lazy_relationships/pull/9) ([Bajena](https://github.com/Bajena))
 - Code cleanup [\#8](https://github.com/Bajena/ams_lazy_relationships/pull/8) ([Bajena](https://github.com/Bajena))
 - Add tests for JSON adapter and improve backwards compatibility [\#7](https://github.com/Bajena/ams_lazy_relationships/pull/7) ([Bajena](https://github.com/Bajena))
