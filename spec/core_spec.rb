@@ -28,12 +28,12 @@ RSpec.describe AmsLazyRelationships::Core do
   end
 
   let(:json_api_adapter_class) do
-    return "ActiveModelSerializers::Adapter::JsonApi".constantize if AMS_VERSION >= Gem::Version.new("0.10.2")
+    return "ActiveModelSerializers::Adapter::JsonApi".constantize if AMS_VERSION >= Gem::Version.new("0.10.0.rc5")
     "ActiveModel::Serializer::Adapter::JsonApi".constantize
   end
 
   let(:json_adapter_class) do
-    return "ActiveModelSerializers::Adapter::Json".constantize if AMS_VERSION >= Gem::Version.new("0.10.2")
+    return "ActiveModelSerializers::Adapter::Json".constantize if AMS_VERSION >= Gem::Version.new("0.10.0.rc5")
     return "ActiveModel::Serializer::Adapter::Json".constantize
   end
 
