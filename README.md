@@ -12,8 +12,6 @@ for every nested lazy relationship. The relationship promises will be
 evaluated only when they're requested.
 E.g. when including `blog_posts.user`: instead of loading a user for each blog post separately it'll gather the blog posts and load all their users at once when including the users in the response.
 
-Important: Currently only JSON API adapter has been tested in the wild if you're using a standard JSON adapter let me know :)
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -36,7 +34,10 @@ class BaseSerializer < ActiveModel::Serializer
 end
 ```
 
-To clear the batch loader's cache between HTTP requests add a following middleware:
+
+**Important:** 
+This gem uses `BatchLoader` heavily. I highly recommend to clear the batch loader's cache between HTTP requests.
+To do so add a following middleware:
 `use BatchLoader::Middleware`
 
 For more info about the middleware check out BatchLoader gem docs: https://github.com/exAspArk/batch-loader#caching
@@ -59,7 +60,6 @@ class UserSerializer < BaseSerializer
   has_many :blog_posts, serializer: BlogPostSerializer do
     lazy_blog_posts
   end
-                
    
   lazy_has_one :poro_model, loader: AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object) }
   
