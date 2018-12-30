@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "ams_lazy_relationships/core/lazy_relationship_meta"
+
 # This module defines a set of methods useful for eliminating N+1 query problem
 # during the serialization. Serializers will first prepare a tree of "promises"
 # for every nested lazy relationship. The relationship promises will be
@@ -13,25 +15,6 @@ module AmsLazyRelationships::Core
 
   def self.ams_version
     @_ams_version ||= Gem::Version.new(ActiveModel::Serializer::VERSION)
-  end
-
-  class LazyRelationshipMeta
-    def initialize(name:, loader:, reflection:, load_for: nil)
-      @name = name.to_sym
-      @loader = loader
-      @reflection = reflection
-      @load_for = load_for
-    end
-
-    attr_reader :name, :loader, :reflection, :load_for
-
-    def serializer_class
-      if AmsLazyRelationships::Core.ams_version <= Gem::Version.new("0.10.0.rc2")
-        return reflection[:association_options][:serializer]
-      end
-
-      reflection.options[:serializer]
-    end
   end
 
   def self.included(klass)
@@ -168,15 +151,14 @@ module AmsLazyRelationships::Core
 
     def find_reflection(name)
       version = AmsLazyRelationships::Core.ams_version
-      if version >= Gem::Version.new("0.10.3")
-        # In 0.10.3 this private API has changed again
-        _reflections[name.to_sym]
-      elsif version >= Gem::Version.new("0.10.0.rc2")
-        # In 0.10.0.rc2 this private API has changed
-        _reflections.find { |r| r.name.to_sym == name.to_sym }
-      else
-        _associations[name.to_sym]
-      end
+
+      # In 0.10.3 this private API has changed again
+      return _reflections[name.to_sym] if version >= Gem::Version.new("0.10.3")
+
+      # In 0.10.0.rc2 this private API has changed
+      return _reflections.find { |r| r.name.to_sym == name.to_sym } if version >= Gem::Version.new("0.10.0.rc2")
+
+      _associations[name.to_sym]
     end
   end
 
