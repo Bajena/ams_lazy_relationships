@@ -99,188 +99,6 @@ RSpec.describe AmsLazyRelationships::Core do
     expect(serializer).to respond_to(:lazy_level1)
   end
 
-  describe "lazy_has_many" do
-    let(:includes) { "level1" }
-
-    let(:level0_serializer_class) do
-      class Level1Serializer3 < BaseTestSerializer
-      end
-
-      class Level0Serializer3 < BaseTestSerializer
-        lazy_has_many :level1,
-                      serializer: Level1Serializer3,
-                      loader: AmsLazyRelationships::Loaders::Association.new(
-                        "Account", :blog_posts
-                      )
-      end
-
-      Level0Serializer3
-    end
-
-    it "provides a convenience method for lazy relationships" do
-      ids = json.dig(:user, :level1).map { |x| x[:id].to_i }
-      expect(ids).to match_array(level1_records.map(&:id))
-    end
-  end
-
-  describe "lazy_has_one" do
-    let(:includes) { "level1" }
-    let(:comment) { Comment.create!(user_id: user.id) }
-    let(:serializer) do
-      level0_serializer_class.new(comment)
-    end
-    let(:level0_serializer_class) do
-      class Level1Serializer4 < BaseTestSerializer
-      end
-
-      class Level0Serializer4 < BaseTestSerializer
-        lazy_has_one :level1,
-                     serializer: Level1Serializer4,
-                     loader: AmsLazyRelationships::Loaders::Association.new(
-                       "Comment", :user
-                     )
-      end
-
-      Level0Serializer4
-    end
-
-    it "provides a convenience method for lazy relationships" do
-      id = json.dig(:comment, :level1, :id).to_i
-      expect(id).to eq(comment.user_id)
-    end
-  end
-
-  describe "lazy_belongs_to" do
-    let(:includes) { "level1" }
-    let(:comment) { Comment.create!(user_id: user.id) }
-    let(:serializer) do
-      level0_serializer_class.new(comment)
-    end
-    let(:level0_serializer_class) do
-      class Level1Serializer5 < BaseTestSerializer
-      end
-
-      class Level0Serializer5 < BaseTestSerializer
-        lazy_belongs_to :level1,
-                     serializer: Level1Serializer5,
-                     loader: AmsLazyRelationships::Loaders::Association.new(
-                       "Comment", :user
-                     )
-      end
-
-      Level0Serializer5
-    end
-
-    it "provides a convenience method for lazy relationships" do
-      id = json.dig(:comment, :level1, :id).to_i
-      expect(id).to eq(comment.user_id)
-    end
-
-    describe "passing block to lazy_belongs_to" do
-      let(:includes) { "level1" }
-      let(:level0_serializer_class) do
-        class Level1Serializer6 < BaseTestSerializer
-          attributes :name
-        end
-
-        class Level0Serializer6 < BaseTestSerializer
-          lazy_belongs_to :level1,
-                          serializer: Level1Serializer6,
-                          loader: AmsLazyRelationships::Loaders::Association.new(
-                            "Comment", :user
-                          ) do |serializer|
-            if object.user_id
-              ll1 = serializer.lazy_level1
-              ll1.name = "x"
-              ll1
-            end
-          end
-        end
-
-        Level0Serializer6
-      end
-
-      it "yields serializer object and lets to use 'object' method" do
-        id = json.dig(:comment, :level1, :id).to_i
-        expect(id).to eq(comment.user_id)
-        serialized_name = json.dig(:comment, :level1, :name)
-        expect(serialized_name).to eq("x")
-      end
-    end
-  end
-
-  describe "loader option" do
-    let(:level0_serializer_class) do
-      class Level1Serializer1 < BaseTestSerializer
-      end
-
-      class Level0Serializer1 < BaseTestSerializer
-        has_many :level1, serializer: Level1Serializer1
-        lazy_relationship :blog_posts
-
-        def level1
-          lazy_blog_posts
-        end
-      end
-
-      Level0Serializer1
-    end
-
-    it "uses the Loaders::Association by default" do
-      expect { json }.not_to raise_error
-    end
-  end
-
-  describe "load_for option" do
-    class UserDecorator
-      alias :read_attribute_for_serialization :send
-
-      def initialize(object)
-        @object = object
-      end
-
-      attr_reader :object
-
-      delegate :id, :blog_posts, to: :object
-
-      def self.model_name
-        @_model_name ||= User.model_name
-      end
-    end
-
-    let(:level0_record) do
-      UserDecorator.new(user)
-    end
-
-    let!(:level0_serializer_class) do
-      class Level1Serializer2 < BaseTestSerializer
-      end
-
-      class Level0Serializer2 < BaseTestSerializer
-        has_many :level1, serializer: Level1Serializer2 do |s|
-          s.lazy_level1
-        end
-        lazy_relationship :level1,
-                          loader: AmsLazyRelationships::Loaders::Association.new(
-                            "User", :blog_posts
-                          ),
-                          load_for: :object
-
-        def level1
-          lazy_blog_posts
-        end
-      end
-
-      Level0Serializer2
-    end
-
-    it "executes the loader on the object pointed by the symbol" do
-      expect(level0_record).
-        to receive(:object).at_least(:once).and_call_original
-      expect { json }.not_to raise_error
-    end
-  end
-
   describe "json_api" do
     let(:adapter_class) do
       json_api_adapter_class
@@ -484,6 +302,188 @@ RSpec.describe AmsLazyRelationships::Core do
           end.to make_database_queries(count: 3, matching: "categories")
         end.not_to make_database_queries(matching: "category_followers")
       end
+    end
+  end
+
+  describe "lazy_has_many" do
+    let(:includes) { "level1" }
+
+    let(:level0_serializer_class) do
+      class Level1Serializer3 < BaseTestSerializer
+      end
+
+      class Level0Serializer3 < BaseTestSerializer
+        lazy_has_many :level1,
+                      serializer: Level1Serializer3,
+                      loader: AmsLazyRelationships::Loaders::Association.new(
+                        "Account", :blog_posts
+                      )
+      end
+
+      Level0Serializer3
+    end
+
+    it "provides a convenience method for lazy relationships" do
+      ids = json.dig(:user, :level1).map { |x| x[:id].to_i }
+      expect(ids).to match_array(level1_records.map(&:id))
+    end
+  end
+
+  describe "lazy_has_one" do
+    let(:includes) { "level1" }
+    let(:comment) { Comment.create!(user_id: user.id) }
+    let(:serializer) do
+      level0_serializer_class.new(comment)
+    end
+    let(:level0_serializer_class) do
+      class Level1Serializer4 < BaseTestSerializer
+      end
+
+      class Level0Serializer4 < BaseTestSerializer
+        lazy_has_one :level1,
+                     serializer: Level1Serializer4,
+                     loader: AmsLazyRelationships::Loaders::Association.new(
+                       "Comment", :user
+                     )
+      end
+
+      Level0Serializer4
+    end
+
+    it "provides a convenience method for lazy relationships" do
+      id = json.dig(:comment, :level1, :id).to_i
+      expect(id).to eq(comment.user_id)
+    end
+  end
+
+  describe "lazy_belongs_to" do
+    let(:includes) { "level1" }
+    let(:comment) { Comment.create!(user_id: user.id) }
+    let(:serializer) do
+      level0_serializer_class.new(comment)
+    end
+    let(:level0_serializer_class) do
+      class Level1Serializer5 < BaseTestSerializer
+      end
+
+      class Level0Serializer5 < BaseTestSerializer
+        lazy_belongs_to :level1,
+                     serializer: Level1Serializer5,
+                     loader: AmsLazyRelationships::Loaders::Association.new(
+                       "Comment", :user
+                     )
+      end
+
+      Level0Serializer5
+    end
+
+    it "provides a convenience method for lazy relationships" do
+      id = json.dig(:comment, :level1, :id).to_i
+      expect(id).to eq(comment.user_id)
+    end
+
+    describe "passing block to lazy_belongs_to" do
+      let(:includes) { "level1" }
+      let(:level0_serializer_class) do
+        class Level1Serializer6 < BaseTestSerializer
+          attributes :name
+        end
+
+        class Level0Serializer6 < BaseTestSerializer
+          lazy_belongs_to :level1,
+                          serializer: Level1Serializer6,
+                          loader: AmsLazyRelationships::Loaders::Association.new(
+                            "Comment", :user
+                          ) do |serializer|
+            if object.user_id
+              ll1 = serializer.lazy_level1
+              ll1.name = "x"
+              ll1
+            end
+          end
+        end
+
+        Level0Serializer6
+      end
+
+      it "yields serializer object and lets to use 'object' method" do
+        id = json.dig(:comment, :level1, :id).to_i
+        expect(id).to eq(comment.user_id)
+        serialized_name = json.dig(:comment, :level1, :name)
+        expect(serialized_name).to eq("x")
+      end
+    end
+  end
+
+  describe "loader option" do
+    let(:level0_serializer_class) do
+      class Level1Serializer1 < BaseTestSerializer
+      end
+
+      class Level0Serializer1 < BaseTestSerializer
+        has_many :level1, serializer: Level1Serializer1
+        lazy_relationship :blog_posts
+
+        def level1
+          lazy_blog_posts
+        end
+      end
+
+      Level0Serializer1
+    end
+
+    it "uses the Loaders::Association by default" do
+      expect { json }.not_to raise_error
+    end
+  end
+
+  describe "load_for option" do
+    class UserDecorator
+      alias :read_attribute_for_serialization :send
+
+      def initialize(object)
+        @object = object
+      end
+
+      attr_reader :object
+
+      delegate :id, :blog_posts, to: :object
+
+      def self.model_name
+        @_model_name ||= User.model_name
+      end
+    end
+
+    let(:level0_record) do
+      UserDecorator.new(user)
+    end
+
+    let!(:level0_serializer_class) do
+      class Level1Serializer2 < BaseTestSerializer
+      end
+
+      class Level0Serializer2 < BaseTestSerializer
+        has_many :level1, serializer: Level1Serializer2 do |s|
+          s.lazy_level1
+        end
+        lazy_relationship :level1,
+                          loader: AmsLazyRelationships::Loaders::Association.new(
+                            "User", :blog_posts
+                          ),
+                          load_for: :object
+
+        def level1
+          lazy_blog_posts
+        end
+      end
+
+      Level0Serializer2
+    end
+
+    it "executes the loader on the object pointed by the symbol" do
+      expect(level0_record).
+        to receive(:object).at_least(:once).and_call_original
+      expect { json }.not_to raise_error
     end
   end
 end
