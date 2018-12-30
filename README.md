@@ -34,7 +34,6 @@ class BaseSerializer < ActiveModel::Serializer
 end
 ```
 
-
 **Important:** 
 This gem uses `BatchLoader` heavily. I highly recommend to clear the batch loader's cache between HTTP requests.
 To do so add a following middleware:
@@ -81,6 +80,7 @@ This loader can be useful e.g. when the serialized object is not an ActiveRecord
 - `AmsLazyRelationships::Loaders::Direct` - Lazy loads data in a "dumb" way - just executes the provided block when needed. Useful e.g. when the relationship is just a PORO which then in its own serializer needs to lazy load some relationships.
 You can use it like this: `AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object)`.
 
+The abovementioned loaders are mostly useful when using ActiveRecord, but there should be no problem building a new loader for different frameworks.
 If you're missing a loader you can create an issue or create your own loader taking the existing ones as an example. 
 
 ## Development
