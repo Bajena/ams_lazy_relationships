@@ -213,12 +213,6 @@ RSpec.describe AmsLazyRelationships::Core do
     let(:included_level1_ids) do
       json.dig(:user, :level1).map { |i| i[:id].to_i }
     end
-    let(:included_level2_ids) do
-      binding.pry
-      json[:included].map do |i|
-        i.dig(:relationships, :level2, :data, :id).try(:to_i)
-      end
-    end
 
     context "0 level nesting requested" do
       it "lazy evaluates up to level 1" do

@@ -26,7 +26,7 @@ module AmsLazyRelationships::Core
     attr_reader :name, :loader, :reflection, :load_for
 
     def serializer_class
-      if AmsLazyRelationships::Core.ams_version <= Gem::Version.new("0.10.0.rc3")
+      if AmsLazyRelationships::Core.ams_version <= Gem::Version.new("0.10.0.rc2")
         return reflection[:association_options][:serializer]
       end
 
@@ -167,9 +167,12 @@ module AmsLazyRelationships::Core
     end
 
     def find_reflection(name)
-      if AmsLazyRelationships::Core.ams_version >= Gem::Version.new("0.10.3") # In 0.10.3 this private API has changed
+      version = AmsLazyRelationships::Core.ams_version
+      if version >= Gem::Version.new("0.10.3")
+        # In 0.10.3 this private API has changed again
         _reflections[name.to_sym]
-      elsif AmsLazyRelationships::Core.ams_version >= Gem::Version.new("0.10.0.rc2") # In 0.10.0.rc2 this private API has changed
+      elsif version >= Gem::Version.new("0.10.0.rc2")
+        # In 0.10.0.rc2 this private API has changed
         _reflections.find { |r| r.name.to_sym == name.to_sym }
       else
         _associations[name.to_sym]
