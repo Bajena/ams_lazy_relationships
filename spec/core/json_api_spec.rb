@@ -4,6 +4,8 @@ require "spec_helper"
 require "active_model_serializers"
 
 RSpec.describe AmsLazyRelationships::Core do
+  next if Gem::Version.new(ActiveModel::Serializer::VERSION) < Gem::Version.new("0.10.0.rc1")
+
   extend WithArModels
 
   with_ar_models
@@ -22,8 +24,16 @@ RSpec.describe AmsLazyRelationships::Core do
   let(:includes) do
     []
   end
+
+  let(:adapter_class) do
+    version = Gem::Version.new(ActiveModel::Serializer::VERSION)
+    return "ActiveModelSerializers::Adapter::JsonApi".constantize if version >= Gem::Version.new("0.10.2")
+    return "ActiveModel::Serializer::Adapter::JsonApi".constantize# if version >= Gem::Version.new("0.10.0.rc1")
+  end
+
+
   let(:json) do
-    ActiveModelSerializers::Adapter::JsonApi.new(
+    adapter_class.new(
       serializer, include: includes
     ).as_json
   end
@@ -214,6 +224,10 @@ RSpec.describe AmsLazyRelationships::Core do
       attr_reader :object
 
       delegate :id, :blog_posts, to: :object
+
+      def self.model_name
+        @_model_name ||= User.model_name
+      end
     end
 
     let(:level0_record) do

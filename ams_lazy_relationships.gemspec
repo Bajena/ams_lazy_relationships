@@ -37,6 +37,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "batch-loader", "=1.2.2"
 
   spec.add_development_dependency "activerecord"
+  # A Ruby library for testing against different versions of dependencies
+  spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bundler", "~> 1.17"
   # Rspec matchers for SQL query counts
   spec.add_development_dependency "db-query-matchers"
