@@ -158,11 +158,16 @@ module AmsLazyRelationships::Core
 
     def find_reflection(name)
       # In 0.10.3 this private API has changed
-      if Gem::Version.new(ActiveModel::Serializer::VERSION) >= Gem::Version.new("0.10.3")
+      if supports_reflections_hash?
         _reflections[name.to_sym]
       else
         _reflections.find { |r| r.name.to_sym == name.to_sym }
       end
+    end
+
+    def supports_reflections_hash?
+      @supports_reflections_hash ||=
+        Gem::Version.new(ActiveModel::Serializer::VERSION) >= Gem::Version.new("0.10.3")
     end
   end
 

@@ -37,6 +37,10 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+    appraisal (2.2.0)
+      bundler
+      rake
+      thor (>= 0.14.0)
     arel (9.0.0)
     ast (2.4.0)
     batch-loader (1.2.2)
@@ -153,6 +157,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   ams_lazy_relationships!
+  appraisal
   bundler (~> 1.17)
   db-query-matchers
   pry

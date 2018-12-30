@@ -4,6 +4,11 @@ env:
   global:
     - CC_TEST_REPORTER_ID=1da1af59767d8c64ae960d5a0ac69089a0fa90e013aedb09e76843f104bec709
 language: ruby
+gemfile:
+  - gemfiles/ams_0.9.gemfile
+  - gemfiles/ams_0.10.0.rc4.gemfile
+  - gemfiles/ams_0.10.2.gemfile
+  - gemfiles/ams_0.10.8.gemfile
 cache: bundler
 rvm:
   - 2.3.4
@@ -15,7 +20,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - bundle exec rake
+  - bundle exec appraisal rake spec
   - git pull origin master:master
   - undercover --compare master
 after_script:
