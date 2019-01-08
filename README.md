@@ -72,7 +72,7 @@ class UserSerializer < BaseSerializer
   lazy_belongs_to :account, loader: AmsLazyRelationships::Loaders::SimpleBelongsTo.new("Account")
   
   lazy_has_many :comment, loader: AmsLazyRelationships::Loaders::SimpleHasMany.new("Comment", foreign_key: :user_id)
-
+end
 ```
 
 As you may have already noticed the gem makes use of various loader classes. 
