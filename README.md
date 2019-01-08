@@ -44,7 +44,7 @@ end
 **Important:** 
 This gem uses `BatchLoader` heavily. I highly recommend to clear the batch loader's cache between HTTP requests.
 To do so add a following middleware:
-`use BatchLoader::Middleware`
+`config.middleware.use BatchLoader::Middleware` to your app's `application.rb`.
 
 For more info about the middleware check out BatchLoader gem docs: https://github.com/exAspArk/batch-loader#caching
 
