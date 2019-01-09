@@ -1,6 +1,13 @@
 # Change Log
 
-## [0.1.0](https://github.com/Bajena/ams_lazy_relationships/tree/0.1.0) (2018-12-30)
+## [0.1.1](https://github.com/Bajena/ams_lazy_relationships/tree/0.1.1) (2019-01-09)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.0...0.1.1)
+
+**Merged pull requests:**
+
+- Relax batch-loader version [\#13](https://github.com/Bajena/ams_lazy_relationships/pull/13) ([Bajena](https://github.com/Bajena))
+
+## [v0.1.0](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.0) (2018-12-30)
 **Closed issues:**
 
 - Add changelog [\#10](https://github.com/Bajena/ams_lazy_relationships/issues/10)
