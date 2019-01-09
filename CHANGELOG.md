@@ -1,7 +1,7 @@
 # Change Log
 
-## [0.1.1](https://github.com/Bajena/ams_lazy_relationships/tree/0.1.1) (2019-01-09)
-[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.0...0.1.1)
+## [v0.1.1](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.1) (2019-01-09)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.0...v0.1.1)
 
 **Merged pull requests:**
 
