@@ -18,22 +18,22 @@ In many cases it's fine to use [`includes`](https://apidock.com/rails/ActiveReco
 There are a few problems with `includes` approach though:
 - It loads all the records provided in the arguments hash. Often you may not need all the nested records to serialize the data you want. `AmsLazyRelationships` will load only the data you need thanks to lazy evaluation.
 - When the app gets bigger and bigger you'd need to update all the `includes` statements across your app to prevent the N+1 queries problem which quickly becomes impossible.
+- It lets you remove N+1s even when not all relationships are ActiveRecord models (e.g. some records are stored in a MySQL DB and other models are stored in Cassandra)
 
 ## Installation
 
-Add this line to your application's Gemfile:
+1. Add this line to your application's Gemfile:
 
 ```ruby
 gem "ams_lazy_relationships"
 ```
 
-And then execute:
+2. Execute:
+```
+$ bundle
+```
 
-    $ bundle
-
-## Installation
-
-Include `AmsLazyRelationships::Core` module in your base serializer
+3. Include `AmsLazyRelationships::Core` module in your base serializer
 
 ```ruby
 class BaseSerializer < ActiveModel::Serializer
@@ -41,19 +41,19 @@ class BaseSerializer < ActiveModel::Serializer
 end
 ```
 
-**Important:** 
+4. **Important:** 
 This gem uses `BatchLoader` heavily. I highly recommend to clear the batch loader's cache between HTTP requests.
 To do so add a following middleware:
 `config.middleware.use BatchLoader::Middleware` to your app's `application.rb`.
 
 For more info about the middleware check out BatchLoader gem docs: https://github.com/exAspArk/batch-loader#caching
 
-### Usage
+## Usage
 Adding the `AmsLazyRelationships::Core` module lets you define lazy relationships in your serializers:
 ```ruby
 
 class UserSerializer < BaseSerializer
-  # Short version - preloads a specified ActiveRecord relationships by default
+  # Short version - preloads a specified ActiveRecord relationship by default
   lazy_has_many :blog_posts
   
   # Works same as the previous one, but the loader option is specified explicitly
@@ -92,6 +92,76 @@ You can use it like this: `AmsLazyRelationships::Loaders::Direct.new(:poro_model
 
 The abovementioned loaders are mostly useful when using ActiveRecord, but there should be no problem building a new loader for different frameworks.
 If you're missing a loader you can create an issue or create your own loader taking the existing ones as an example. 
+
+### More examples
+Here are a few use cases for the lazy relationships. Hopefully they'll let you understand a bit more how the gem works.
+
+#### Example 1: Basic ActiveRecord relationships
+If the relationships in your serializers are plain old ActiveRecord relationships you're lucky, because ams_lazy_relationships by default assumes that the relationship is an ActiveRecord relationship, so you can use the simplest syntax.
+Imagine you have an endpoint that renders a list of blog posts and includes their comments.
+The N+1 prone way of defining the serializer would be:
+```ruby
+class BlogPostSerializer < BaseSerializer
+  has_many :comments
+end
+```
+
+To prevent loading comments using a separate DB query for each post just change it to:
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_has_many :comments
+end
+```
+
+#### Example 2: Modifying the relationship before rendering
+Sometimes it may happen that you need to process the relationship before rendering, e.g. decorate the records. In this case the gem provides a special method (in our case `lazy_comments`) for each defined relationship. Check out the example - we'll decorate every comment before serializing:
+
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_has_many :comments do
+    lazy_comments.map(&:decorate)
+   end
+end
+```
+
+#### Example 3: Introducing loader classes
+Under the hood ams_lazy_relationships uses special loader classes to batch load the relationships. By default the gem uses serializer class names and relationship names to instantiate correct loaders, but it may happen that e.g. your serializer's class name doesn't match the model name (e.g. your model's name is `BlogPost` but the serializer's name is `PostSerializer`).
+
+In this case you can define the lazy relationship by passing a correct loader param:
+```ruby
+class PostSerializer < BaseSerializer
+  lazy_has_many :comments, serializer: CommentSerializer,
+    loader: AmsLazyRelationships::Loaders::Association.new(
+              "BlogPost", :comments
+            )
+end
+```
+
+#### Example 4: Non ActiveRecord -> ActiveRecord relationships
+This one is interesting. It may happen that the root record is not an ActiveRecord model (e.g. a Cequel model), however its relationship is an AR model.
+Imagine that `BlogPost` is not an AR model and `Comment` is a standard AR model. The lazy relationship would look like this:
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_has_many :comments, 
+    loader: AmsLazyRelationships::Loaders::SimpleHasMany.new(
+      "Comment", foreign_key: :blog_post_id
+    )
+end
+```
+
+#### Example 5: Use lazy relationship without rendering it
+Sometimes you may just want to make use of lazy relationship without rendering the whole nested record. 
+For example imagine that your `BlogPost` serializer is supposed to render `author_name` attribute. You can define the lazy relationship and just use it in other attribute evaluator:
+
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_relationship :author
+  
+  attribute :author_name do
+    lazy_author.name
+  end
+end
+```
 
 ## Development
 
