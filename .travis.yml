@@ -12,7 +12,7 @@ cache: bundler
 rvm:
   - 2.3.4
 before_install:
-  - gem install bundler undercover --no-doc
+  - gem install bundler:1.17 undercover --no-doc
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
