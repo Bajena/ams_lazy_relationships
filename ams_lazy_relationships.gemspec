@@ -52,7 +52,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-rspec", "= 1.20.1"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-lcov"
-  spec.add_development_dependency "sqlite3", "~> 1.3"
+  spec.add_development_dependency "sqlite3", "~> 1.3.6"
   # Detect untested code blocks in recent changes
   spec.add_development_dependency "undercover"
   # Dynamically build an Active Record model (with table) within a test context
