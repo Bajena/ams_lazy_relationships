@@ -480,4 +480,37 @@ RSpec.describe AmsLazyRelationships::Core do
       expect { json }.not_to raise_error
     end
   end
+
+  describe "inheritance of lazy relationships" do
+    let(:includes) { ["blog_posts", "comments"] }
+    let(:level1_serializer) do
+      Class.new(BaseTestSerializer)
+    end
+    let(:base_level0_serializer) do
+      relationship_serializer = level1_serializer
+
+      superbase = Class.new(BaseTestSerializer) do
+        has_many :blog_posts, serializer: relationship_serializer, &:lazy_blog_posts
+        lazy_relationship :blog_posts, loader: AmsLazyRelationships::Loaders::Association.new(
+          "User", :blog_posts
+        )
+      end
+
+      Class.new(superbase) do
+        has_many :comments, serializer: relationship_serializer, &:lazy_comments
+        lazy_relationship :comments, loader: AmsLazyRelationships::Loaders::Association.new(
+          "User", :comments
+        )
+      end
+    end
+
+    let(:level0_serializer_class) do
+      Class.new(base_level0_serializer)
+    end
+
+    it "keeps the lazy relationships in inherited serializers" do
+      expect(json[:user][:blog_posts]).not_to be_nil
+      expect(json[:user][:comments]).not_to be_nil
+    end
+  end
 end
