@@ -28,6 +28,16 @@ module AmsLazyRelationships::Core
     include RelationshipWrapperMethods
     include Evaluation
 
+    def inherited(subclass)
+      super
+      if @lazy_relationships
+        subclass.instance_variable_set(
+          :@lazy_relationships,
+          @lazy_relationships.clone
+        )
+      end
+    end
+
     private
 
     # lazy_relationships [Array<AmsLazyRelationships::Core::LazyRelationshipMeta>]
