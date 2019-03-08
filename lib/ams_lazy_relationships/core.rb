@@ -30,12 +30,12 @@ module AmsLazyRelationships::Core
 
     def inherited(subclass)
       super
-
-      if @lazy_relationships
-        subclass.instance_variable_set(
-          :@lazy_relationships, @lazy_relationships.clone
-        )
-      end
+      
+      return unless @lazy_relationships
+      
+      subclass.instance_variable_set(
+        :@lazy_relationships, @lazy_relationships.clone
+      )
     end
 
     private
