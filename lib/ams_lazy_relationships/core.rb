@@ -30,7 +30,7 @@ module AmsLazyRelationships::Core
 
     def inherited(subclass)
       super
-      
+
       return unless @lazy_relationships
 
       subclass.instance_variable_set(
