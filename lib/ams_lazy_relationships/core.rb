@@ -32,7 +32,7 @@ module AmsLazyRelationships::Core
       super
       
       return unless @lazy_relationships
-      
+
       subclass.instance_variable_set(
         :@lazy_relationships, @lazy_relationships.clone
       )
