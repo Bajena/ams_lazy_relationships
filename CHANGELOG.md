@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.1.2](https://github.com/Bajena/ams_lazy_relationships/tree/0.1.2) (2019-03-10)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.1...0.1.2)
+
+**Closed issues:**
+
+- Broken sqlite dependency [\#16](https://github.com/Bajena/ams_lazy_relationships/issues/16)
+
+**Merged pull requests:**
+
+- Add tests for lazy relationships inheritance [\#18](https://github.com/Bajena/ams_lazy_relationships/pull/18) ([Bajena](https://github.com/Bajena))
+- Lock sqlite dependency [\#17](https://github.com/Bajena/ams_lazy_relationships/pull/17) ([Bajena](https://github.com/Bajena))
+- Fix superclass lazy relationships not loading properly on subclass [\#15](https://github.com/Bajena/ams_lazy_relationships/pull/15) ([willcosgrove](https://github.com/willcosgrove))
+
 ## [v0.1.1](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.1) (2019-01-09)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.0...v0.1.1)
 
