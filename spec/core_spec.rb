@@ -411,11 +411,11 @@ RSpec.describe AmsLazyRelationships::Core do
 
   describe "loader option" do
     let(:level0_serializer_class) do
-      class Level1Serializer1 < BaseTestSerializer
+      class Level1Serializer7 < BaseTestSerializer
       end
 
-      class Level0Serializer1 < BaseTestSerializer
-        has_many :level1, serializer: Level1Serializer1
+      class Level0Serializer7 < BaseTestSerializer
+        has_many :level1, serializer: Level1Serializer7
         lazy_relationship :blog_posts
 
         def level1
@@ -423,7 +423,7 @@ RSpec.describe AmsLazyRelationships::Core do
         end
       end
 
-      Level0Serializer1
+      Level0Serializer7
     end
 
     it "uses the Loaders::Association by default" do
@@ -453,11 +453,11 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     let!(:level0_serializer_class) do
-      class Level1Serializer2 < BaseTestSerializer
+      class Level1Serializer8 < BaseTestSerializer
       end
 
-      class Level0Serializer2 < BaseTestSerializer
-        has_many :level1, serializer: Level1Serializer2 do |s|
+      class Level0Serializer8 < BaseTestSerializer
+        has_many :level1, serializer: Level1Serializer8 do |s|
           s.lazy_level1
         end
         lazy_relationship :level1,
@@ -471,13 +471,55 @@ RSpec.describe AmsLazyRelationships::Core do
         end
       end
 
-      Level0Serializer2
+      Level0Serializer8
     end
 
     it "executes the loader on the object pointed by the symbol" do
       expect(level0_record).
         to receive(:object).at_least(:once).and_call_original
       expect { json }.not_to raise_error
+    end
+  end
+
+  describe "inheritance of lazy relationships" do
+    let(:level0_serializer_class) do
+      class Level2Serializer9 < BaseTestSerializer
+      end
+
+      class Level1Serializer9 < BaseTestSerializer
+        lazy_has_one :level2, serializer: Level2Serializer9
+        lazy_relationship :level2, loader: AmsLazyRelationships::Loaders::SimpleBelongsTo.new(
+          "Category"
+        )
+      end
+
+      class Level1Serializer9Inherited < Level1Serializer9
+      end
+
+      class Level0Serializer9 < BaseTestSerializer
+        has_many :level1, serializer: Level1Serializer9Inherited do |s|
+          s.lazy_level1
+        end
+        lazy_relationship :level1, loader: AmsLazyRelationships::Loaders::Association.new(
+          "User", :blog_posts
+        )
+      end
+
+      Level0Serializer9
+    end
+
+    let(:included_level1_ids) do
+      json.dig(:user, :level1).map { |i| i[:id].to_i }
+    end
+
+    let(:includes) { ["level1.level2"] }
+
+    it "copies relationships to inherited serializer" do
+      expect do
+        expect do
+          json
+        end.to make_database_queries(count: 1, matching: "blog_posts")
+      end.to make_database_queries(count: 1, matching: "categories")
     end
   end
 end
