@@ -20,12 +20,6 @@ module AmsLazyRelationships
       # @param block [Proc] a block to execute when data is evaluated.
       #  Loaded data is yielded as a block argument.
       def load(record, &block)
-        if record.association(association_name.to_sym).loaded?
-          data = record.public_send(association_name)
-          block&.call(Array.wrap(data).compact.uniq)
-          return data
-        end
-
         lazy_load(record, block)
       end
 
@@ -47,6 +41,11 @@ module AmsLazyRelationships
         # stores duplicated records in has_many relationships for some reason.
         # Calling uniq(&:id) solves the problem.
         records_to_preload = records.uniq(&:id)
+
+        preloaded = records.select do |r|
+          r.association(association_name.to_sym).loaded?
+        end
+        records_to_preload -= preloaded
 
         ::ActiveRecord::Associations::Preloader.new.preload(
           records_to_preload, association_name
