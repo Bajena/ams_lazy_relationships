@@ -42,11 +42,6 @@ module AmsLazyRelationships
         # Calling uniq(&:id) solves the problem.
         records_to_preload = records.uniq(&:id)
 
-        preloaded = records.select do |r|
-          r.association(association_name.to_sym).loaded?
-        end
-        records_to_preload -= preloaded
-
         ::ActiveRecord::Associations::Preloader.new.preload(
           records_to_preload, association_name
         )
