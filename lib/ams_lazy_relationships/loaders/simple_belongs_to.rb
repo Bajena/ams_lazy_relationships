@@ -23,12 +23,12 @@ module AmsLazyRelationships
       # @param block [Proc] a block to execute when data is evaluated
       #  Loaded data is yielded as a block argument.
       def load(record, &block)
-        BatchLoader.for(record).batch(key: cache_key(record)) do |records, loader|
-          data = load_data(records)
+        BatchLoader.for(record.public_send(foreign_key).to_s.presence).batch(key: cache_key(record)) do |fks, loader|
+          data = load_data(fks)
 
           block&.call(data)
 
-          resolve(records, data, loader)
+          resolve(fks, data, loader)
         end
       end
 
@@ -36,8 +36,8 @@ module AmsLazyRelationships
 
       attr_reader :association_class_name, :foreign_key
 
-      def load_data(records)
-        data_ids = records.map(&foreign_key).compact.uniq
+      def load_data(fks)
+        data_ids = fks.compact.uniq
         data = if data_ids.present?
                  association_class_name.constantize.where(id: data_ids)
                else
@@ -47,12 +47,11 @@ module AmsLazyRelationships
         data
       end
 
-      def resolve(records, data, loader)
+      def resolve(fks, data, loader)
         data = data.index_by { |d| d.id.to_s }
-        records.each do |r|
-          fk_value = r.public_send(foreign_key).to_s
-          loaded_item = data[fk_value]
-          loader.call(r, loaded_item)
+        fks.each do |fk|
+          loaded_item = data[fk]
+          loader.call(fk, loaded_item)
         end
       end
 

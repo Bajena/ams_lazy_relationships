@@ -20,12 +20,13 @@ module AmsLazyRelationships
       #  Loaded data is yielded as a block argument.
       def load(record, &block)
         key = "#{record.class}/#{association_class_name}"
-        BatchLoader.for(record).batch(key: key) do |records, loader|
-          data = load_data(records)
+        # Some records use UUID class as id - it's safer to cast them to strings
+        BatchLoader.for(record.id.to_s).batch(key: key) do |record_ids, loader|
+          data = load_data(record_ids)
 
           block&.call(data)
 
-          resolve(records, data, loader)
+          resolve(record_ids, data, loader)
         end
       end
 
@@ -33,19 +34,17 @@ module AmsLazyRelationships
 
       attr_reader :association_class_name, :foreign_key
 
-      def load_data(records)
-        # Some records use UUID class as id - it's safer to cast them to strings
-        record_ids = records.map { |r| r.id.to_s }
+      def load_data(record_ids)
         association_class_name.constantize.where(
           foreign_key => record_ids
         )
       end
 
-      def resolve(records, data, loader)
+      def resolve(record_ids, data, loader)
         data = data.group_by { |d| d.public_send(foreign_key).to_s }
 
-        records.each do |r|
-          loader.call(r, data[r.id.to_s] || [])
+        record_ids.each do |id|
+          loader.call(id, data[id] || [])
         end
       end
     end
