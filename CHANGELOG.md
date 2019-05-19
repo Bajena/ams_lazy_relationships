@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.1.3](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.3) (2019-05-19)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/0.1.2...v0.1.3)
+
+**Closed issues:**
+
+- Association loader shouldn't yield cached associations data instantly  [\#22](https://github.com/Bajena/ams_lazy_relationships/issues/22)
+- Customize loading behavior [\#14](https://github.com/Bajena/ams_lazy_relationships/issues/14)
+
+**Merged pull requests:**
+
+- Do not yield cached associations data instantly in Association loader [\#23](https://github.com/Bajena/ams_lazy_relationships/pull/23) ([Bajena](https://github.com/Bajena))
+
 ## [0.1.2](https://github.com/Bajena/ams_lazy_relationships/tree/0.1.2) (2019-03-10)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.1...0.1.2)
 
