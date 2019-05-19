@@ -25,16 +25,45 @@ RSpec.describe AmsLazyRelationships::Loaders::Association do
         expect(loader.load(record)).to eq(blog_post)
       end
 
-      it "yields the loaded data" do
+      it "does not return data immediately, but BatchLoader instance instead" do
+        x = loader.load(record)
+        expect(x.inspect).to include("BatchLoader")
+        x = x.itself
+        expect(x.inspect).to include("BlogPost")
+      end
+
+      it "yields the loaded data but only when it is required" do
         yielded_data = nil
 
         promise = loader.load(record) do |data|
           yielded_data = data
         end
 
+        # Data should not be yielded yet
+        expect(yielded_data).to eq(nil)
+
         promise.id
 
         expect(yielded_data).to eq([blog_post])
+      end
+
+      context "when one of the records was cached but other not" do
+        let(:blog_post2) { BlogPost.create! }
+        let!(:record2) { Comment.create!(blog_post_id: blog_post2.id) }
+
+        it "queries only for one record" do
+          expect do
+            c1 = loader.load(record)
+            c2 = loader.load(record2)
+
+            expect(c1).to eq(blog_post)
+            expect(c2).to eq(blog_post2)
+          end.to make_database_queries(
+            count: 1,
+            # If blog_post wasn't cached then a query with "id" IN() would be called
+            matching: /SELECT.*FROM.*blog_posts.*WHERE.*blog_posts.*\"id\" = /
+          )
+        end
       end
     end
 
@@ -82,17 +111,23 @@ RSpec.describe AmsLazyRelationships::Loaders::Association do
     end
 
     describe "batch loading" do
+      let(:reloaded_record) do
+        Comment.find(record.id)
+      end
       let(:blog_post2) { BlogPost.create! }
       let!(:record2) { Comment.create!(blog_post_id: blog_post2.id) }
 
       it "calls the db only once and returns correct results" do
         expect do
-          c1 = loader.load(record)
+          c1 = loader.load(reloaded_record)
           c2 = loader.load(record2)
 
           expect(c1).to eq(blog_post)
           expect(c2).to eq(blog_post2)
-        end.to make_database_queries(count: 1)
+        end.to make_database_queries(
+          count: 1,
+          matching: /SELECT.*FROM.*blog_posts.*WHERE.*blog_posts.*\"id\" IN \(\?, \?\)/
+        )
       end
 
       it "yields the loaded data" do
