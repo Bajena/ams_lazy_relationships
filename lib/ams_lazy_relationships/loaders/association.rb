@@ -20,26 +20,16 @@ module AmsLazyRelationships
       # @param block [Proc] a block to execute when data is evaluated.
       #  Loaded data is yielded as a block argument.
       def load(record, &block)
-        if record.association(association_name.to_sym).loaded?
-          data = record.public_send(association_name)
-          block&.call(Array.wrap(data).compact.uniq)
-          return data
-        end
-
-        lazy_load(record, block)
-      end
-
-      private
-
-      attr_reader :model_class_name, :association_name
-
-      def lazy_load(record, block)
         BatchLoader.for(record).batch(key: batch_key) do |records, loader|
           data = load_data(records, loader)
 
           block&.call(data)
         end
       end
+
+      private
+
+      attr_reader :model_class_name, :association_name
 
       def load_data(records, loader)
         # It may happen that same record comes here twice (e.g. wrapped
