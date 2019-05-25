@@ -16,10 +16,16 @@ module AmsLazyRelationships
       end
 
       # Lazy loads and yields the data when evaluating
-      # @param record [Object] an object for which we're loading the data
+      # @param serializer_instance [Object] Serializer instance for an object for which we're loading the data
       # @param block [Proc] a block to execute when data is evaluated.
       #  Loaded data is yielded as a block argument.
-      def load(record, &block)
+      def load(serializer_instance, load_for, &block)
+        record = if load_for.present?
+                   serializer_instance.object.public_send(load_for)
+                 else
+                   serializer_instance.object
+                 end
+
         BatchLoader.for(record).batch(key: batch_key) do |records, loader|
           data = load_data(records, loader)
 

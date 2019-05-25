@@ -11,30 +11,24 @@ module AmsLazyRelationships::Core
     # Recursively loads the tree of lazy relationships
     # The nesting is limited to 3 levels.
     #
-    # @param object [Object] Lazy relationships will be loaded for this record.
+    # @param serializer_instance [Object] Lazy relationships will be loaded for this serializer.
     # @param level [Integer] Current nesting level
-    def load_all_lazy_relationships(object, level = NESTING_START_LEVEL)
+    def load_all_lazy_relationships(serializer_instance, level = NESTING_START_LEVEL)
       return if level >= LAZY_NESTING_LEVELS
-      return unless object
+      return unless serializer_instance.object
 
       return unless lazy_relationships
 
       lazy_relationships.each_value do |lrm|
-        load_lazy_relationship(lrm, object, level)
+        load_lazy_relationship(lrm, serializer_instance, level)
       end
     end
 
     # @param lrm [LazyRelationshipMeta] relationship data
-    # @param object [Object] Object to load the relationship for
+    # @param serializer_instance [Object] Serializer instance to load the relationship for
     # @param level [Integer] Current nesting level
-    def load_lazy_relationship(lrm, object, level = NESTING_START_LEVEL)
-      load_for_object = if lrm.load_for.present?
-                          object.public_send(lrm.load_for)
-                        else
-                          object
-                        end
-
-      lrm.loader.load(load_for_object) do |batch_records|
+    def load_lazy_relationship(lrm, serializer_instance, level = NESTING_START_LEVEL)
+      lrm.loader.load(serializer_instance, lrm.load_for) do |batch_records|
         deep_load_for_yielded_records(
           batch_records,
           lrm,
@@ -48,8 +42,10 @@ module AmsLazyRelationships::Core
       # reflection for this relationship. We can skip deeper lazy loading.
       return unless lrm.reflection
 
-      Array.wrap(batch_records).each do |r|
-        lrm.serializer_class.send(:load_all_lazy_relationships, r, level + 1)
+      Array.wrap(batch_records).each do |record|
+        serializer_class = lrm.serializer_class || ActiveModel::Serializer.serializer_for(record)
+        serializer_instance = serializer_class.new(record)
+        serializer_class.send(:load_all_lazy_relationships, serializer_instance, level + 1)
       end
     end
   end
