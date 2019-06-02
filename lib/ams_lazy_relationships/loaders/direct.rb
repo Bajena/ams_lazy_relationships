@@ -19,7 +19,7 @@ module AmsLazyRelationships
       # @param block [Proc] a block to execute when data is evaluated.
       #  Loaded data is yielded as a block argument.
       def load(record, &block)
-        BatchLoader.for(record).batch(key: cache_key(record)) do |records, loader|
+        BatchLoader.for(record).batch(key: cache_key(record), replace_methods: false) do |records, loader|
           data = []
           records.each do |r|
             value = calculate_value(r)

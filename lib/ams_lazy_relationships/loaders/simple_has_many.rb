@@ -20,7 +20,7 @@ module AmsLazyRelationships
       #  Loaded data is yielded as a block argument.
       def load(record, &block)
         key = "#{record.class}/#{association_class_name}"
-        BatchLoader.for(record).batch(key: key) do |records, loader|
+        BatchLoader.for(record).batch(key: key, replace_methods: false) do |records, loader|
           data = load_data(records)
 
           block&.call(data)
