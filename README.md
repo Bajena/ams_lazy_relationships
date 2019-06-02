@@ -163,6 +163,36 @@ class BlogPostSerializer < BaseSerializer
 end
 ```
 
+## Performance comparison with vanilla AMS
+
+In general the bigger and more complex your serialized records hierarchy is and the more latency you have in your DB the more you'll benefit from using this gem. 
+Example results for average size records tree (10 blog posts -> 10 comments each -> 1 user per comment, performed on local in-memory SQLite DB) are:
+
+### Time:
+
+```bash
+# With lazy relationships:    0.860000   0.010000   0.870000 (  0.870297)
+# Vanilla AMS:                1.050000   0.000000   1.050000 (  1.059801)
+```
+
+This means your serializers should get **~13%** speed boost by introducing lazy relationships.
+
+### Memory:
+
+```bash
+# With lazy relationships:
+#                         46.283M memsize (     0.000  retained)
+#                        506.696k objects (     0.000  retained)
+#                         50.000  strings (     0.000  retained)
+# Vanilla AMS:            42.738M memsize (     0.000  retained)
+#                        545.266k objects (     0.000  retained)
+#                         50.000  strings (     0.000  retained)
+```
+
+This means that serialization may consume **~5%** more memory.
+
+Detailed benchmark script & results can be found [here](/spec/benchmark_spec.rb).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
