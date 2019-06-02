@@ -11,5 +11,5 @@ task default: :spec
 GitHubChangelogGenerator::RakeTask.new :changelog do |config|
   config.user = "Bajena"
   config.project = "ams_lazy_relationships"
-  config.future_release = "0.1.2"
+  config.future_release = "0.1.4"
 end

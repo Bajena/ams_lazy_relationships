@@ -57,4 +57,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "undercover"
   # Dynamically build an Active Record model (with table) within a test context
   spec.add_development_dependency "with_model", "~> 2.0"
+
+  spec.add_development_dependency "benchmark-memory", "~> 0.1"
 end
