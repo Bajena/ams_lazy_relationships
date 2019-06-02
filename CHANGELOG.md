@@ -1,5 +1,22 @@
 # Change Log
 
+## [v0.1.4](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.4) (2019-06-02)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.3...v0.1.4)
+
+**Closed issues:**
+
+- Use replace\_methods: false by default in loaders [\#28](https://github.com/Bajena/ams_lazy_relationships/issues/28)
+- Require less restrictive batch-loader version [\#25](https://github.com/Bajena/ams_lazy_relationships/issues/25)
+- Profile time and memory usage [\#21](https://github.com/Bajena/ams_lazy_relationships/issues/21)
+- Loading circular relationships [\#20](https://github.com/Bajena/ams_lazy_relationships/issues/20)
+- Add railtie [\#19](https://github.com/Bajena/ams_lazy_relationships/issues/19)
+
+**Merged pull requests:**
+
+- Use replace\_methods: false in batch loaders [\#29](https://github.com/Bajena/ams_lazy_relationships/pull/29) ([Bajena](https://github.com/Bajena))
+- Add benchmark for speed & memory usage [\#27](https://github.com/Bajena/ams_lazy_relationships/pull/27) ([Bajena](https://github.com/Bajena))
+- Require less restrictive batch loader version [\#26](https://github.com/Bajena/ams_lazy_relationships/pull/26) ([Bajena](https://github.com/Bajena))
+
 ## [v0.1.3](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.3) (2019-05-19)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/0.1.2...v0.1.3)
 
