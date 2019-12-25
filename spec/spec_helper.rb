@@ -12,7 +12,6 @@ require "ams_lazy_relationships"
 
 require "undercover"
 require "with_model"
-require "batch-loader"
 require "pry"
 require "db-query-matchers"
 
