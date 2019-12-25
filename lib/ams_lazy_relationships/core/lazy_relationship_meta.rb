@@ -19,17 +19,5 @@ module AmsLazyRelationships::Core
     end
 
     attr_reader :name, :loader, :reflection, :load_for
-
-    # @return [ActiveModel::Serializer] AMS Serializer class for the relationship
-    def serializer_class
-      return @serializer_class if defined?(@serializer_class)
-
-      @serializer_class =
-        if AmsLazyRelationships::Core.ams_version <= Gem::Version.new("0.10.0.rc2")
-          reflection[:association_options][:serializer]
-        else
-          reflection.options[:serializer]
-        end
-    end
   end
 end
