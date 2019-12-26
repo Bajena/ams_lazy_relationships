@@ -339,6 +339,14 @@ RSpec.describe AmsLazyRelationships::Core do
                      loader: AmsLazyRelationships::Loaders::Association.new(
                        "Comment", :user
                      )
+
+        attribute :conditional_level1 do
+          lazy_level1 ? 'exists' : 'missing'
+        end
+
+        attribute :safe_navigated_level1 do
+          lazy_level1&.id
+        end
       end
 
       Level0Serializer4
@@ -347,6 +355,30 @@ RSpec.describe AmsLazyRelationships::Core do
     it "provides a convenience method for lazy relationships" do
       id = json.dig(:comment, :level1, :id).to_i
       expect(id).to eq(comment.user_id)
+    end
+
+    it "realizes the presence of relationship object through trivial condition" do
+      conditional_level1 = json.dig(:comment, :conditional_level1)
+      expect(conditional_level1).to eq('exists')
+    end
+
+    it "realizes the presence of relationship object through safe navigation" do
+      conditional_level1 = json.dig(:comment, :safe_navigated_level1)
+      expect(conditional_level1).to eq(user.id)
+    end
+
+    context 'missing level1' do
+      let(:comment) { Comment.create!(user_id: nil) }
+
+      it "realizes the absence of relationship object through trivial condition" do
+        conditional_level1 = json.dig(:comment, :conditional_level1)
+        expect(conditional_level1).to eq('missing')
+      end
+
+      it "realizes the absence of relationship object through safe navigation" do
+        conditional_level1 = json.dig(:comment, :safe_navigated_level1)
+        expect(conditional_level1).to be_nil
+      end
     end
   end
 
@@ -366,6 +398,14 @@ RSpec.describe AmsLazyRelationships::Core do
                      loader: AmsLazyRelationships::Loaders::Association.new(
                        "Comment", :user
                      )
+
+        attribute :conditional_level1 do
+          lazy_level1 ? 'exists' : 'missing'
+        end
+
+        attribute :safe_navigated_level1 do
+          lazy_level1&.id
+        end
       end
 
       Level0Serializer5
@@ -374,6 +414,30 @@ RSpec.describe AmsLazyRelationships::Core do
     it "provides a convenience method for lazy relationships" do
       id = json.dig(:comment, :level1, :id).to_i
       expect(id).to eq(comment.user_id)
+    end
+
+    it "realizes the presence of relationship object through trivial condition" do
+      conditional_level1 = json.dig(:comment, :conditional_level1)
+      expect(conditional_level1).to eq('exists')
+    end
+
+    it "realizes the presence of relationship object through safe navigation" do
+      conditional_level1 = json.dig(:comment, :safe_navigated_level1)
+      expect(conditional_level1).to eq(user.id)
+    end
+
+    context 'missing level1' do
+      let(:comment) { Comment.create!(user_id: nil) }
+
+      it "realizes the absence of relationship object through trivial condition" do
+        conditional_level1 = json.dig(:comment, :conditional_level1)
+        expect(conditional_level1).to eq('missing')
+      end
+
+      it "realizes the absence of relationship object through safe navigation" do
+        conditional_level1 = json.dig(:comment, :safe_navigated_level1)
+        expect(conditional_level1).to be_nil
+      end
     end
 
     describe "passing block to lazy_belongs_to" do
