@@ -36,7 +36,9 @@ module AmsLazyRelationships
         # in a decorator and non-wrapped). In this case Associations::Preloader
         # stores duplicated records in has_many relationships for some reason.
         # Calling uniq(&:id) solves the problem.
-        records_to_preload = records.uniq(&:id)
+        records_to_preload = records.uniq(&:id).reject do |r|
+          r.association(association_name).loaded?
+        end
 
         ::ActiveRecord::Associations::Preloader.new.preload(
           records_to_preload, association_name

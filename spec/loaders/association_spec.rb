@@ -58,7 +58,11 @@ RSpec.describe AmsLazyRelationships::Loaders::Association do
 
             expect(c1).to eq(blog_post)
             expect(c2).to eq(blog_post2)
-          end.not_to make_database_queries
+          end.to make_database_queries(
+            count: 1,
+            # If blog_post wasn't cached then a query with "id" IN() would be called
+            matching: /SELECT.*FROM.*blog_posts.*WHERE.*blog_posts.*\"id\" = /
+          )
         end
       end
     end
