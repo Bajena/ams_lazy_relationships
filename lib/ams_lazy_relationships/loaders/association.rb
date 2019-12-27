@@ -54,7 +54,7 @@ module AmsLazyRelationships
         # It may happen that same record comes here twice (e.g. wrapped
         # in a decorator and non-wrapped). In this case Associations::Preloader
         # stores duplicated records in has_many relationships for some reason.
-        # Calling uniq(&:id) solves the problem.
+        # Calling uniq(&:id) solves the problem.ss
         records.uniq(&:id).reject do |r|
           r.association(association_name).loaded?
         end
