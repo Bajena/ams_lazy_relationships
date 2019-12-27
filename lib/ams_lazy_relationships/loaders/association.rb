@@ -32,14 +32,8 @@ module AmsLazyRelationships
       attr_reader :model_class_name, :association_name
 
       def load_data(records, loader)
-        # It may happen that same record comes here twice (e.g. wrapped
-        # in a decorator and non-wrapped). In this case Associations::Preloader
-        # stores duplicated records in has_many relationships for some reason.
-        # Calling uniq(&:id) solves the problem.
-        records_to_preload = records.uniq(&:id)
-
         ::ActiveRecord::Associations::Preloader.new.preload(
-          records_to_preload, association_name
+          records_to_preload(records), association_name
         )
 
         data = []
@@ -54,6 +48,16 @@ module AmsLazyRelationships
 
       def batch_key
         "#{model_class_name}/#{association_name}"
+      end
+
+      def records_to_preload(records)
+        # It may happen that same record comes here twice (e.g. wrapped
+        # in a decorator and non-wrapped). In this case Associations::Preloader
+        # stores duplicated records in has_many relationships for some reason.
+        # Calling uniq(&:id) solves the problem.
+        records.uniq(&:id).reject do |r|
+          r.association(association_name).loaded?
+        end
       end
     end
   end
