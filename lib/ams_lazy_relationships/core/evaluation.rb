@@ -49,8 +49,15 @@ module AmsLazyRelationships::Core
       return unless lrm.reflection
 
       Array.wrap(batch_records).each do |r|
-        lrm.serializer_class.send(:load_all_lazy_relationships, r, level + 1)
+        deep_load_for_yielded_record(r, lrm, level)
       end
+    end
+
+    def deep_load_for_yielded_record(batch_record, lrm, level)
+      serializer = serializer_for(batch_record, lrm.reflection.options)
+      return unless serializer
+
+      serializer.send(:load_all_lazy_relationships, batch_record, level + 1)
     end
   end
 end

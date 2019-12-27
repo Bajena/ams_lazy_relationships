@@ -522,4 +522,64 @@ RSpec.describe AmsLazyRelationships::Core do
       end.to make_database_queries(count: 1, matching: "categories")
     end
   end
+
+  describe "searching for nested serializer" do
+    let(:level0_serializer_class) do
+      module Serializer10
+        class UserSerializer < BaseTestSerializer
+          lazy_has_many :blog_posts
+        end
+
+        class BlogPostSerializer < BaseTestSerializer
+          lazy_belongs_to :category
+
+          attributes :title
+        end
+      end
+
+      Serializer10::UserSerializer
+    end
+
+    let(:adapter_class) { json_api_adapter_class }
+    let(:json) do
+      JSON.parse(
+        adapter_class.new(
+          serializer, include: includes
+        ).to_json
+      )
+    end
+    let(:includes) { ["blog_posts.category"] }
+    let(:blog_post_payload) { json['included'].detect { |obj| obj['type'] == 'blog-posts' } }
+
+    around do |example|
+      serializer_lookup_chain = ActiveModelSerializers.config.serializer_lookup_chain
+      custom_serializer_lookup = -> (resource_class, serializer_class, _namespace) {
+        "#{serializer_class.name.deconstantize}::#{resource_class.name}Serializer"
+      }
+      ActiveModelSerializers.config.serializer_lookup_chain = [custom_serializer_lookup] + serializer_lookup_chain
+
+      example.run
+
+      ActiveModelSerializers.config.serializer_lookup_chain = serializer_lookup_chain
+    end
+
+
+    it "avoids N+1 still" do
+      expect do
+        expect do
+          json
+        end.to make_database_queries(count: 1, matching: "blog_posts")
+      end.to make_database_queries(count: 1, matching: "categories")
+    end
+
+    it "searches for serializer in same manner as ActiveModelSerializer do" do
+      blog_post_attributes = blog_post_payload['attributes'].keys
+      expect(blog_post_attributes).to match_array(['title'])
+    end
+
+    it "does not fail if nested serializer is missing" do
+      category_attributes = blog_post_payload.dig('relationships', 'category', 'data').keys
+      expect(category_attributes).to match_array(%w[id created_at updated_at])
+    end
+  end
 end
