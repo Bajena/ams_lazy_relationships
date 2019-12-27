@@ -185,7 +185,6 @@ DEPENDENCIES
   ams_lazy_relationships!
   appraisal
   benchmark-memory (~> 0.1)
-  bundler (~> 1.17)
   db-query-matchers
   github_changelog_generator
   pry
@@ -202,4 +201,4 @@ DEPENDENCIES
   with_model (~> 2.0)
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
