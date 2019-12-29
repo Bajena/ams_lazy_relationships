@@ -33,8 +33,9 @@ module AmsLazyRelationships
       # @param loader [Proc] Proc used for assigning the batch loaded data to
       #   records. First argument is the record and the second is the data
       #   loaded for it.
+      # @param scope [Object] Serialization scope object.
       # @returns [Array<Object>] Array of loaded objects
-      def load_data(_records, _loader)
+      def load_data(_records, _loader, _scope)
         raise "Implement in child"
       end
 

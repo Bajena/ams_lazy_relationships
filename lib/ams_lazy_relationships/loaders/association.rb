@@ -21,7 +21,7 @@ module AmsLazyRelationships
 
       attr_reader :model_class_name, :association_name
 
-      def load_data(records, loader, scope)
+      def load_data(records, loader, _scope)
         ::ActiveRecord::Associations::Preloader.new.preload(
           records_to_preload(records), association_name
         )
