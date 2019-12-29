@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require "ams_lazy_relationships/loaders/base"
+
 module AmsLazyRelationships
   module Loaders
     # Batch loads parent ActiveRecord records for given record by foreign key.
     # Useful when the relationship is not a standard ActiveRecord relationship.
-    class SimpleBelongsTo
+    class SimpleBelongsTo < Base
       # @param association_class_name [String] The name of AR class being the parent
       #   record of the records being loaded. E.g. When loading comment.blog_post
       #   it'd be "BlogPost".
@@ -18,31 +20,19 @@ module AmsLazyRelationships
         @foreign_key = foreign_key.to_sym
       end
 
-      # Lazy loads and yields the data when evaluating
-      # @param record [Object] an object for which we're loading the belongs to data
-      # @param block [Proc] a block to execute when data is evaluated
-      #  Loaded data is yielded as a block argument.
-      def load(record, &block)
-        BatchLoader.for(record).batch(key: cache_key(record), replace_methods: false) do |records, loader|
-          data = load_data(records)
-
-          block&.call(data)
-
-          resolve(records, data, loader)
-        end
-      end
-
       private
 
       attr_reader :association_class_name, :foreign_key
 
-      def load_data(records)
+      def load_data(records, loader)
         data_ids = records.map(&foreign_key).compact.uniq
         data = if data_ids.present?
                  association_class_name.constantize.where(id: data_ids)
                else
                  []
                end
+
+        resolve(records, data, loader)
 
         data
       end
@@ -56,7 +46,7 @@ module AmsLazyRelationships
         end
       end
 
-      def cache_key(record)
+      def batch_key(record)
         "#{record.class}/#{association_class_name}"
       end
     end

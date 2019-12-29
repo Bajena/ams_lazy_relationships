@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require "ams_lazy_relationships/loaders/base"
+
 module AmsLazyRelationships
   module Loaders
     # Lazy loads data in a "dumb" way - just executes the provided block when needed
-    class Direct
+    class Direct < Base
       # @param relationship_name [Symbol] used for building cache key. Also if the
       #   `load_block` param is `nil` the loader will just call `relationship_name`
       #   method on the record being processed.
@@ -14,30 +16,22 @@ module AmsLazyRelationships
         @load_block = load_block
       end
 
-      # Lazy loads and yields the data when evaluating
-      # @param record [Object] an object for which we're loading the data
-      # @param block [Proc] a block to execute when data is evaluated.
-      #  Loaded data is yielded as a block argument.
-      def load(record, &block)
-        BatchLoader.for(record).batch(key: cache_key(record), replace_methods: false) do |records, loader|
-          data = []
-          records.each do |r|
-            value = calculate_value(r)
-            data << value
-            loader.call(r, value)
-          end
-
-          data = data.flatten.compact.uniq
-
-          block&.call(data)
-        end
-      end
-
       private
 
       attr_reader :relationship_name, :load_block
 
-      def cache_key(record)
+      def load_data(records, loader)
+        data = []
+        records.each do |r|
+          value = calculate_value(r)
+          data << value
+          loader.call(r, value)
+        end
+
+        data = data.flatten.compact.uniq
+      end
+
+      def batch_key(record)
         "#{record.class}/#{relationship_name}"
       end
 
