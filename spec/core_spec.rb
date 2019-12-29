@@ -523,7 +523,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
   end
 
-  describe "searching for nested serializer" do
+  xdescribe "searching for nested serializer" do
     let(:level0_serializer_class) do
       module Serializer10
         class UserSerializer < BaseTestSerializer
