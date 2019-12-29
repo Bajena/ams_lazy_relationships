@@ -12,7 +12,8 @@ module AmsLazyRelationships::Core
     #
     # @param relation_name [Symbol] relation name to be loaded
     # @param object [Object] Lazy relationships will be loaded for this record.
-    def load_lazy_relationship(relation_name, object)
+    # @param scope [Object] serialization scope object.
+    def load_lazy_relationship(relation_name, object, scope)
       lrm = lazy_relationships[relation_name]
       unless lrm
         raise ArgumentError, "Undefined lazy '#{relation_name}' relationship for '#{name}' serializer"
@@ -26,7 +27,7 @@ module AmsLazyRelationships::Core
       # 3. `lazy_association&.id` expression can raise NullPointer exception
       #
       # Calling `__sync` will evaluate the promise.
-      init_lazy_relationship(lrm, object).__sync
+      init_lazy_relationship(lrm, object, scope).__sync
     end
 
     # Recursively loads the tree of lazy relationships
@@ -34,43 +35,49 @@ module AmsLazyRelationships::Core
     #
     # @param object [Object] Lazy relationships will be loaded for this record.
     # @param level [Integer] Current nesting level
-    def init_all_lazy_relationships(object, level = NESTING_START_LEVEL)
+    # @param scope [Object] serialization scope object.
+    def init_all_lazy_relationships(object, scope, level = NESTING_START_LEVEL)
       return if level >= LAZY_NESTING_LEVELS
       return unless object
 
       return unless lazy_relationships
 
       lazy_relationships.each_value do |lrm|
-        init_lazy_relationship(lrm, object, level)
+        init_lazy_relationship(lrm, object, scope, level)
       end
     end
 
     # @param lrm [LazyRelationshipMeta] relationship data
     # @param object [Object] Object to load the relationship for
     # @param level [Integer] Current nesting level
-    def init_lazy_relationship(lrm, object, level = NESTING_START_LEVEL)
+    # @param scope [Object] serialization scope object.
+    def init_lazy_relationship(lrm, object, scope, level = NESTING_START_LEVEL)
       load_for_object = if lrm.load_for.present?
                           object.public_send(lrm.load_for)
                         else
                           object
                         end
 
-      lrm.loader.load(load_for_object) do |batch_records|
+      # Make sure that old custom loaders are still supported
+      loader_args = lrm.loader.method(:load).arity == 1 ? [load_for_object] : [load_for_object, scope]
+
+      lrm.loader.load(*loader_args) do |batch_records|
         deep_init_for_yielded_records(
           batch_records,
+          scope,
           lrm,
           level
         )
       end
     end
 
-    def deep_init_for_yielded_records(batch_records, lrm, level)
+    def deep_init_for_yielded_records(batch_records, scope, lrm, level)
       # There'll be no more nesting if there's no
       # reflection for this relationship. We can skip deeper lazy loading.
       return unless lrm.reflection
 
       Array.wrap(batch_records).each do |r|
-        deep_init_for_yielded_record(r, lrm, level)
+        deep_init_for_yielded_record(r, scope, lrm, level)
       end
     end
 
@@ -78,7 +85,7 @@ module AmsLazyRelationships::Core
       serializer = lazy_serializer_for(batch_record, lrm: lrm)
       return unless serializer
 
-      serializer.send(:init_all_lazy_relationships, batch_record, level + 1)
+      serializer.send(:init_all_lazy_relationships, batch_record, scope, level + 1)
     end
 
     def lazy_serializer_for(object, lrm: nil, relation_name: nil)

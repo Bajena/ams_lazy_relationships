@@ -24,7 +24,7 @@ module AmsLazyRelationships
 
       attr_reader :association_class_name, :foreign_key
 
-      def load_data(records, loader)
+      def load_data(records, loader, scope)
         data_ids = records.map(&foreign_key).compact.uniq
         data = if data_ids.present?
                  association_class_name.constantize.where(id: data_ids)

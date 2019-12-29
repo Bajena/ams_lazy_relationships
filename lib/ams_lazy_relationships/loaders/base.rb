@@ -7,9 +7,10 @@ module AmsLazyRelationships
     class Base
       # Lazy loads and yields the data when evaluating
       # @param record [Object] an object for which we're loading the data
+      # @param scope [Object] serialization scope object.
       # @param block [Proc] a block to execute when data is evaluated.
       #  Loaded data is yielded as a block argument.
-      def load(record, &block)
+      def load(record, scope = nil, &block)
         BatchLoader.for(record).batch(
           key: batch_key(record),
           # Replacing methods can be costly, especially on objects with lots
@@ -18,7 +19,7 @@ module AmsLazyRelationships
           # https://github.com/exAspArk/batch-loader/tree/v1.4.1#replacing-methods
           replace_methods: false
         ) do |records, loader|
-          data = load_data(records, loader)
+          data = load_data(records, loader, scope)
 
           block&.call(data)
         end

@@ -20,7 +20,7 @@ module AmsLazyRelationships
 
       attr_reader :relationship_name, :load_block
 
-      def load_data(records, loader)
+      def load_data(records, loader, scope)
         data = []
         records.each do |r|
           value = calculate_value(r)

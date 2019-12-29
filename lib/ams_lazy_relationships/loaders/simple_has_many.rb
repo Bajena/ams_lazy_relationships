@@ -20,7 +20,7 @@ module AmsLazyRelationships
 
       attr_reader :association_class_name, :foreign_key
 
-      def load_data(records, loader)
+      def load_data(records, loader, scope)
         # Some records use UUID class as id - it's safer to cast them to strings
         record_ids = records.map { |r| r.id.to_s }
         association_class_name.constantize.where(

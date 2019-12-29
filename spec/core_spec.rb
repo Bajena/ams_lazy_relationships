@@ -1018,4 +1018,89 @@ RSpec.describe AmsLazyRelationships::Core do
       include_examples 'lazy loader when include_data option is set'
     end
   end
+
+  describe "using serialization scope" do
+    class BlogPostsLoader < AmsLazyRelationships::Loaders::Base
+      def load_data(records, loader, scope)
+        data = []
+
+        records.each do |r|
+          d = r.blog_posts
+          d = d.where(title: scope[:title]) if scope
+
+          loader.call(r, d)
+          data << d
+        end
+
+        data.flatten.compact.uniq
+      end
+
+      def batch_key(_)
+        "Key"
+      end
+    end
+
+    let(:level0_serializer_class) do
+      class Level1Serializer11 < BaseTestSerializer
+      end
+
+      class Level0Serializer11 < BaseTestSerializer
+        has_many :level1, serializer: Level1Serializer11 do |s|
+          s.lazy_level1
+        end
+        lazy_relationship :level1, loader: BlogPostsLoader.new
+      end
+
+      Level0Serializer11
+    end
+    let(:includes) { ["level1"] }
+
+    before do
+      level1_records[0].update!(title: "BP1")
+    end
+
+    context "when scope is present" do
+      let(:serializer) { level0_serializer_class.new(level0_record, scope: { title: "BP1" }) }
+
+      it "filters the data based on scope" do
+        expect(json.dig(:user, :level1).length).to eq(1)
+        expect(json.dig(:user, :level1, 0, :id)).to eq(level1_records[0].id)
+      end
+    end
+
+    context "when scope is blank" do
+      it "doesn't filter the data based on scope" do
+        expect(json.dig(:user, :level1).length).to eq(3)
+      end
+    end
+
+    context "when using deprecated loaders" do
+      let(:serializer) { level0_serializer_class.new(level0_record, scope: { title: "BP1" }) }
+
+      class DeprecatedBlogPostsLoader < BlogPostsLoader
+        def load(records, &block)
+          super(records, nil, &block)
+        end
+      end
+
+      let(:level0_serializer_class) do
+        class Level1Serializer12 < BaseTestSerializer
+        end
+
+        class Level0Serializer12 < BaseTestSerializer
+          has_many :level1, serializer: Level1Serializer12 do |s|
+            s.lazy_level1
+          end
+          lazy_relationship :level1, loader: DeprecatedBlogPostsLoader.new
+        end
+
+        Level0Serializer12
+      end
+
+
+      it "works correctly" do
+        expect(json.dig(:user, :level1).length).to eq(3)
+      end
+    end
+  end
 end
