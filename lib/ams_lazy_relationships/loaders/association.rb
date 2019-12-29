@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require "ams_lazy_relationships/loaders/base"
+
 module AmsLazyRelationships
   module Loaders
     # Lazy loads (has_one/has_many/has_many_through/belongs_to) ActiveRecord
     # associations for ActiveRecord models
-    class Association
+    class Association < Base
       # @param model_class_name [String] The name of AR class for which the
       #   associations are loaded. E.g. When loading comment.blog_post
       #   it'd be "BlogPost".
@@ -13,18 +15,6 @@ module AmsLazyRelationships
       def initialize(model_class_name, association_name)
         @model_class_name = model_class_name
         @association_name = association_name
-      end
-
-      # Lazy loads and yields the data when evaluating
-      # @param record [Object] an object for which we're loading the data
-      # @param block [Proc] a block to execute when data is evaluated.
-      #  Loaded data is yielded as a block argument.
-      def load(record, &block)
-        BatchLoader.for(record).batch(key: batch_key, replace_methods: false) do |records, loader|
-          data = load_data(records, loader)
-
-          block&.call(data)
-        end
       end
 
       private
@@ -46,8 +36,8 @@ module AmsLazyRelationships
         data = data.flatten.compact.uniq
       end
 
-      def batch_key
-        "#{model_class_name}/#{association_name}"
+      def batch_key(_)
+        @batch_key ||= "#{model_class_name}/#{association_name}"
       end
 
       def records_to_preload(records)
