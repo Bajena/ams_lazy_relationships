@@ -33,14 +33,14 @@ module AmsLazyRelationships
       #   records. First argument is the record and the second is the data
       #   loaded for it.
       # @returns [Array<Object>] Array of loaded objects
-      def load_data(records, loader)
+      def load_data(_records, _loader)
         raise "Implement in child"
       end
 
       # Computes a batching key based on currently evaluated record
       # @param record [Object]
       # @returns [String] Batching key
-      def batch_key(record)
+      def batch_key(_record)
         raise "Implement in child"
       end
     end
