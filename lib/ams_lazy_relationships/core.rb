@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "ams_lazy_relationships/core/lazy_relationship_method"
+require "ams_lazy_relationships/core/lazy_dig_method"
 require "ams_lazy_relationships/core/relationship_wrapper_methods"
 require "ams_lazy_relationships/core/evaluation"
 
@@ -18,6 +19,7 @@ module AmsLazyRelationships::Core
 
   def self.included(klass)
     klass.send :extend, ClassMethods
+    klass.send :include, LazyDigMethod
     klass.send :prepend, Initializer
 
     klass.send(:define_relationship_wrapper_methods)
@@ -48,7 +50,7 @@ module AmsLazyRelationships::Core
     def initialize(*)
       super
 
-      self.class.send(:load_all_lazy_relationships, object)
+      self.class.send(:init_all_lazy_relationships, object)
     end
   end
 end

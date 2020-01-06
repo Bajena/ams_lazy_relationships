@@ -163,6 +163,24 @@ class BlogPostSerializer < BaseSerializer
 end
 ```
 
+#### Example 6: Lazy dig through relationships
+In additional to previous example you may want to make use of nested lazy relationship without rendering of any nested record.
+There is an `lazy_dig` method to be used for that:
+
+```ruby
+class AuthorSerializer < BaseSerializer
+  lazy_relationship :address
+end
+
+class BlogPostSerializer < BaseSerializer
+  lazy_relationship :author
+
+  attribute :author_address do
+    lazy_dig(:author, :address)&.full_address
+  end
+end
+```
+
 ## Performance comparison with vanilla AMS
 
 In general the bigger and more complex your serialized records hierarchy is and the more latency you have in your DB the more you'll benefit from using this gem. 
