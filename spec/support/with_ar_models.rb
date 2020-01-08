@@ -16,6 +16,10 @@ module WithArModels
       table do |t|
         t.timestamps null: false
       end
+
+      model do
+        has_many :category_followers
+      end
     end
 
     with_model :CategoryFollower do
