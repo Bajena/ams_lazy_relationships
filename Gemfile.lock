@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ams_lazy_relationships (0.1.4)
+    ams_lazy_relationships (0.1.5)
       active_model_serializers
       batch-loader (~> 1)
 
@@ -78,7 +78,7 @@ GEM
       parser (>= 2.5, != 2.5.1.1)
     jaro_winkler (1.5.2)
     json (2.1.0)
-    jsonapi-renderer (0.2.0)
+    jsonapi-renderer (0.2.2)
     loofah (2.3.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)

@@ -1,5 +1,26 @@
 # Change Log
 
+## [v0.1.5](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.5) (2020-01-08)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.4...v0.1.5)
+
+**Closed issues:**
+
+- Extract a base class for the loaders [\#39](https://github.com/Bajena/ams_lazy_relationships/issues/39)
+- "Association" loader loads unnecessary records on AR 5.2.3+ [\#37](https://github.com/Bajena/ams_lazy_relationships/issues/37)
+- undefined method `load\_all\_lazy\_relationships' for nil:NilClass [\#30](https://github.com/Bajena/ams_lazy_relationships/issues/30)
+- Convert loaders to use strings instead of records as main keys [\#24](https://github.com/Bajena/ams_lazy_relationships/issues/24)
+
+**Merged pull requests:**
+
+- Improve tests for nested serializer lookup [\#43](https://github.com/Bajena/ams_lazy_relationships/pull/43) ([stokarenko](https://github.com/stokarenko))
+- Extract a base class for lazy loaders [\#40](https://github.com/Bajena/ams_lazy_relationships/pull/40) ([Bajena](https://github.com/Bajena))
+- Filter out preloaded records in `Association` preloader [\#36](https://github.com/Bajena/ams_lazy_relationships/pull/36) ([Bajena](https://github.com/Bajena))
+- Synchronize lazy relationships [\#35](https://github.com/Bajena/ams_lazy_relationships/pull/35) ([stokarenko](https://github.com/stokarenko))
+- Fix nested serializer lookup [\#34](https://github.com/Bajena/ams_lazy_relationships/pull/34) ([stokarenko](https://github.com/stokarenko))
+- Fix batch loader dependency [\#33](https://github.com/Bajena/ams_lazy_relationships/pull/33) ([stokarenko](https://github.com/stokarenko))
+- Bump rack from 2.0.6 to 2.0.8 [\#32](https://github.com/Bajena/ams_lazy_relationships/pull/32) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump loofah from 2.2.3 to 2.3.1 [\#31](https://github.com/Bajena/ams_lazy_relationships/pull/31) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v0.1.4](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.4) (2019-06-02)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.3...v0.1.4)
 
