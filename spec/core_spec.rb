@@ -523,23 +523,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
   end
 
-  xdescribe "searching for nested serializer" do
-    let(:level0_serializer_class) do
-      module Serializer10
-        class UserSerializer < BaseTestSerializer
-          lazy_has_many :blog_posts
-        end
-
-        class BlogPostSerializer < BaseTestSerializer
-          lazy_belongs_to :category
-
-          attributes :title
-        end
-      end
-
-      Serializer10::UserSerializer
-    end
-
+  shared_examples "lazy loader for nested serializer" do
     let(:adapter_class) { json_api_adapter_class }
     let(:json) do
       JSON.parse(
@@ -549,7 +533,80 @@ RSpec.describe AmsLazyRelationships::Core do
       )
     end
     let(:includes) { ["blog_posts.category"] }
-    let(:blog_post_payload) { json['included'].detect { |obj| obj['type'] == 'blog-posts' } }
+    let(:blog_post_payload) { json['included'].detect { |obj| obj['type'] == 'blog_posts' } }
+    let(:category_payload) { json['included'].detect { |obj| obj['type'] == 'categories' } }
+
+    it "avoids N+1 still" do
+      expect { json }
+        .to make_database_queries(count: 1, matching: "blog_posts")
+        .and make_database_queries(count: 1, matching: "categories")
+        .and make_database_queries(count: 1, matching: "category_followers")
+    end
+
+    it "searches for nested serializer in same manner as ActiveModelSerializer do" do
+      blog_post_attributes = blog_post_payload['attributes'].keys
+      expect(blog_post_attributes).to match_array(['title'])
+
+      category_attributes = category_payload['attributes'].keys
+      expect(category_attributes).to match_array(%w[created_at])
+    end
+
+    it "does not fail if nested serializer is missing" do
+      category_follower_attributes = category_payload.dig('relationships', 'category_followers', 'data', 0).keys
+      expect(category_follower_attributes).to match_array(%w[id category_id created_at updated_at])
+    end
+  end
+
+  context "straightforward serializers lookup" do
+    let(:level0_serializer_class) do
+      module Serializer10
+        class UserSerializer < BaseTestSerializer
+          lazy_has_many :blog_posts
+        end
+
+        class UserSerializer::BlogPostSerializer < BaseTestSerializer
+          lazy_belongs_to :category
+
+          attributes :title
+        end
+
+        class UserSerializer::BlogPostSerializer::CategorySerializer < BaseTestSerializer
+          attributes :created_at
+
+          lazy_has_many :category_followers
+        end
+      end
+
+      Serializer10::UserSerializer
+    end
+
+    include_examples "lazy loader for nested serializer"
+  end
+
+  context "customized serializers lookup" do
+    next unless AMS_VERSION >= Gem::Version.new("0.10.3")
+
+    let(:level0_serializer_class) do
+      module Serializer11
+        class UserSerializer < BaseTestSerializer
+          lazy_has_many :blog_posts
+        end
+
+        class BlogPostSerializer < BaseTestSerializer
+          lazy_belongs_to :category
+
+          attributes :title
+        end
+
+        class CategorySerializer < BaseTestSerializer
+          attributes :created_at
+
+          lazy_has_many :category_followers
+        end
+      end
+
+      Serializer11::UserSerializer
+    end
 
     around do |example|
       serializer_lookup_chain = ActiveModelSerializers.config.serializer_lookup_chain
@@ -563,23 +620,6 @@ RSpec.describe AmsLazyRelationships::Core do
       ActiveModelSerializers.config.serializer_lookup_chain = serializer_lookup_chain
     end
 
-
-    it "avoids N+1 still" do
-      expect do
-        expect do
-          json
-        end.to make_database_queries(count: 1, matching: "blog_posts")
-      end.to make_database_queries(count: 1, matching: "categories")
-    end
-
-    it "searches for serializer in same manner as ActiveModelSerializer do" do
-      blog_post_attributes = blog_post_payload['attributes'].keys
-      expect(blog_post_attributes).to match_array(['title'])
-    end
-
-    it "does not fail if nested serializer is missing" do
-      category_attributes = blog_post_payload.dig('relationships', 'category', 'data').keys
-      expect(category_attributes).to match_array(%w[id created_at updated_at])
-    end
+    include_examples "lazy loader for nested serializer"
   end
 end

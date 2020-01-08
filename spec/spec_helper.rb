@@ -33,6 +33,8 @@ RSpec.configure do |config|
   config.extend WithModel
 
   config.before(:all) do
+    ActiveModelSerializers.config.key_transform = :unaltered
+
     ActiveRecord::Base.establish_connection(
       "adapter"  => "sqlite3",
       "database" => ":memory:"
