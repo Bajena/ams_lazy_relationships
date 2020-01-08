@@ -30,11 +30,7 @@ module AmsLazyRelationships::Core
       real_relationship_options = options.except(*lazy_relationship_option_keys)
 
       block ||= lambda do |serializer|
-        # We need to evaluate the promise right before AMS tries
-        # to serialize it. Otherwise AMS will attempt to serialize nil values
-        # with a specific V1 serializer.
-        # Calling `itself` will evaluate the promise.
-        serializer.public_send("lazy_#{name}").tap(&:itself)
+        serializer.public_send("lazy_#{name}")
       end
 
       public_send(type, name.to_sym, real_relationship_options, &block)
