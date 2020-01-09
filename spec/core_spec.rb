@@ -105,16 +105,16 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     let(:included_level1_ids) do
-      json[:included].map { |i| i[:id].to_i }
+      json[:included].map { |i| i[:id] }
     end
     let(:relationship_level2_ids) do
       json[:included].map do |i|
-        i.dig(:relationships, :level2, :data, :id).try(:to_i)
+        i.dig(:relationships, :level2, :data, :id)
       end
     end
     let(:relationship_level1_ids) do
       json.dig(:data, :relationships, :level1, :data).map do |i|
-        i[:id].to_i
+        i[:id]
       end
     end
 
@@ -211,7 +211,7 @@ RSpec.describe AmsLazyRelationships::Core do
 
   describe "json" do
     let(:included_level1_ids) do
-      json.dig(:user, :level1).map { |i| i[:id].to_i }
+      json.dig(:user, :level1).map { |i| i[:id] }
     end
 
     context "0 level nesting requested" do
@@ -318,7 +318,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     it "provides a convenience method for lazy relationships" do
-      ids = json.dig(:user, :level1).map { |x| x[:id].to_i }
+      ids = json.dig(:user, :level1).map { |x| x[:id] }
       expect(ids).to match_array(level1_records.map(&:id))
     end
   end
@@ -353,7 +353,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     it "provides a convenience method for lazy relationships" do
-      id = json.dig(:comment, :level1, :id).to_i
+      id = json.dig(:comment, :level1, :id)
       expect(id).to eq(comment.user_id)
     end
 
@@ -412,7 +412,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     it "provides a convenience method for lazy relationships" do
-      id = json.dig(:comment, :level1, :id).to_i
+      id = json.dig(:comment, :level1, :id)
       expect(id).to eq(comment.user_id)
     end
 
@@ -465,7 +465,7 @@ RSpec.describe AmsLazyRelationships::Core do
       end
 
       it "yields serializer object and lets to use 'object' method" do
-        id = json.dig(:comment, :level1, :id).to_i
+        id = json.dig(:comment, :level1, :id)
         expect(id).to eq(comment.user_id)
         serialized_name = json.dig(:comment, :level1, :name)
         expect(serialized_name).to eq("x")
@@ -572,10 +572,6 @@ RSpec.describe AmsLazyRelationships::Core do
       Level0Serializer9
     end
 
-    let(:included_level1_ids) do
-      json.dig(:user, :level1).map { |i| i[:id].to_i }
-    end
-
     let(:includes) { ["level1.level2"] }
 
     it "copies relationships to inherited serializer" do
@@ -621,7 +617,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
   end
 
-  context "straightforward serializers lookup" do
+  describe "straightforward serializers lookup" do
     let(:level0_serializer_class) do
       module Serializer10
         class UserSerializer < BaseTestSerializer
@@ -647,7 +643,7 @@ RSpec.describe AmsLazyRelationships::Core do
     include_examples "lazy loader for nested serializer"
   end
 
-  context "customized serializers lookup" do
+  describe "customized serializers lookup" do
     next unless AMS_VERSION >= Gem::Version.new("0.10.3")
 
     let(:level0_serializer_class) do
