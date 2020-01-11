@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.2.0](https://github.com/Bajena/ams_lazy_relationships/tree/v0.2.0) (2020-01-11)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.5...v0.2.0)
+
+**Merged pull requests:**
+
+- Lazy dig [\#44](https://github.com/Bajena/ams_lazy_relationships/pull/44) ([stokarenko](https://github.com/stokarenko))
+
 ## [v0.1.5](https://github.com/Bajena/ams_lazy_relationships/tree/v0.1.5) (2020-01-08)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.4...v0.1.5)
 
