@@ -105,16 +105,16 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     let(:included_level1_ids) do
-      json[:included].map { |i| i[:id].to_i }
+      json[:included].map { |i| i[:id] }
     end
     let(:relationship_level2_ids) do
       json[:included].map do |i|
-        i.dig(:relationships, :level2, :data, :id).try(:to_i)
+        i.dig(:relationships, :level2, :data, :id)
       end
     end
     let(:relationship_level1_ids) do
       json.dig(:data, :relationships, :level1, :data).map do |i|
-        i[:id].to_i
+        i[:id]
       end
     end
 
@@ -211,7 +211,7 @@ RSpec.describe AmsLazyRelationships::Core do
 
   describe "json" do
     let(:included_level1_ids) do
-      json.dig(:user, :level1).map { |i| i[:id].to_i }
+      json.dig(:user, :level1).map { |i| i[:id] }
     end
 
     context "0 level nesting requested" do
@@ -318,7 +318,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     it "provides a convenience method for lazy relationships" do
-      ids = json.dig(:user, :level1).map { |x| x[:id].to_i }
+      ids = json.dig(:user, :level1).map { |x| x[:id] }
       expect(ids).to match_array(level1_records.map(&:id))
     end
   end
@@ -353,7 +353,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     it "provides a convenience method for lazy relationships" do
-      id = json.dig(:comment, :level1, :id).to_i
+      id = json.dig(:comment, :level1, :id)
       expect(id).to eq(comment.user_id)
     end
 
@@ -412,7 +412,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     it "provides a convenience method for lazy relationships" do
-      id = json.dig(:comment, :level1, :id).to_i
+      id = json.dig(:comment, :level1, :id)
       expect(id).to eq(comment.user_id)
     end
 
@@ -465,7 +465,7 @@ RSpec.describe AmsLazyRelationships::Core do
       end
 
       it "yields serializer object and lets to use 'object' method" do
-        id = json.dig(:comment, :level1, :id).to_i
+        id = json.dig(:comment, :level1, :id)
         expect(id).to eq(comment.user_id)
         serialized_name = json.dig(:comment, :level1, :name)
         expect(serialized_name).to eq("x")
@@ -572,10 +572,6 @@ RSpec.describe AmsLazyRelationships::Core do
       Level0Serializer9
     end
 
-    let(:included_level1_ids) do
-      json.dig(:user, :level1).map { |i| i[:id].to_i }
-    end
-
     let(:includes) { ["level1.level2"] }
 
     it "copies relationships to inherited serializer" do
@@ -621,7 +617,7 @@ RSpec.describe AmsLazyRelationships::Core do
     end
   end
 
-  context "straightforward serializers lookup" do
+  describe "straightforward serializers lookup" do
     let(:level0_serializer_class) do
       module Serializer10
         class UserSerializer < BaseTestSerializer
@@ -647,7 +643,7 @@ RSpec.describe AmsLazyRelationships::Core do
     include_examples "lazy loader for nested serializer"
   end
 
-  context "customized serializers lookup" do
+  describe "customized serializers lookup" do
     next unless AMS_VERSION >= Gem::Version.new("0.10.3")
 
     let(:level0_serializer_class) do
@@ -685,5 +681,190 @@ RSpec.describe AmsLazyRelationships::Core do
     end
 
     include_examples "lazy loader for nested serializer"
+  end
+
+  describe '#lazy_dig' do
+    context 'collection association' do
+      let(:level0_serializer_class) do
+        module Serializer12
+          class CategorySerializer < BaseTestSerializer
+            lazy_has_many :category_followers
+          end
+
+          class BlogPostSerializer < BaseTestSerializer
+            lazy_belongs_to :category, serializer: CategorySerializer
+          end
+
+          class UserSerializer < BaseTestSerializer
+            lazy_has_many :blog_posts, serializer: BlogPostSerializer
+          end
+        end
+
+        Serializer12::UserSerializer
+      end
+
+      it 'does not fire unnecessary queries' do
+        expect { json }
+          .to make_database_queries(count: 0, matching: 'blog_posts')
+      end
+
+      context '1 level dig' do
+        context 'success finding' do
+          let(:level0_serializer_class) do
+            Class.new(super()) do
+              attribute(:blog_post_ids) { lazy_dig(:blog_posts).map(&:id) }
+            end
+          end
+
+          it 'prevents N+1 queries' do
+            expect { json }
+              .to make_database_queries(count: 1, matching: 'blog_posts')
+              .and make_database_queries(count: 0, matching: 'categories')
+          end
+
+          it 'digs association properly' do
+            json_blog_post_ids = json.dig(:user, :blog_post_ids)
+            expect(json_blog_post_ids).to match_array(level1_records.map(&:id))
+          end
+        end
+
+        context 'misspelled association' do
+          let(:level0_serializer_class) do
+            Class.new(super()) do
+              attribute(:blog_post_ids) { lazy_dig(:misspelled_blog_posts).map(&:id) }
+
+              class << self
+                delegate :name, to: :superclass
+              end
+            end
+          end
+
+          it 'raises ArgumentError' do
+            expect { json }
+              .to raise_error(ArgumentError, /Undefined lazy 'misspelled_blog_posts' relationship for 'Serializer12::UserSerializer' serializer/)
+          end
+        end
+      end
+
+      context '2 level dig' do
+        context 'success finding' do
+          let(:level0_serializer_class) do
+            Class.new(super()) do
+              attribute(:category_ids) { lazy_dig(:blog_posts, :category).map(&:id) }
+            end
+          end
+
+          it 'prevents N+1 queries' do
+            expect { json }
+              .to make_database_queries(count: 1, matching: 'blog_posts')
+              .and make_database_queries(count: 1, matching: 'categories')
+              .and make_database_queries(count: 0, matching: 'category_followers')
+          end
+
+          it 'digs association properly' do
+            json_category_ids = json.dig(:user, :category_ids)
+            expect(json_category_ids).to match_array(level2_records.map(&:id))
+          end
+        end
+
+        context 'misspelled association' do
+          let(:level0_serializer_class) do
+            Class.new(super()) do
+              attribute(:category_ids) { lazy_dig(:blog_posts, :misspelled_category).map(&:id) }
+            end
+          end
+
+          it 'raises ArgumentError' do
+            expect { json }
+              .to raise_error(ArgumentError, /Undefined lazy 'misspelled_category' relationship for 'Serializer12::BlogPostSerializer' serializer/)
+          end
+        end
+      end
+
+      context '3 level dig' do
+        context 'success finding' do
+          let(:level0_serializer_class) do
+            Class.new(super()) do
+              attribute(:category_follower_ids) { lazy_dig(:blog_posts, :category, :category_followers).map(&:id) }
+            end
+          end
+
+          it 'prevents N+1 queries' do
+            expect { json }
+              .to make_database_queries(count: 1, matching: 'blog_posts')
+              .and make_database_queries(count: 1, matching: 'categories')
+              .and make_database_queries(count: 1, matching: 'category_followers')
+          end
+
+          it 'digs association properly' do
+            json_category_follower_ids = json.dig(:user, :category_follower_ids)
+            expect(json_category_follower_ids).to match_array(level3_records.map(&:id))
+          end
+        end
+
+        context 'misspelled association' do
+          let(:level0_serializer_class) do
+            Class.new(super()) do
+              attribute(:category_follower_ids) { lazy_dig(:blog_posts, :category, :misspelled_category_followers).map(&:id) }
+            end
+          end
+
+          it 'raises ArgumentError' do
+            expect { json }
+              .to raise_error(ArgumentError, /Undefined lazy 'misspelled_category_followers' relationship for 'Serializer12::CategorySerializer' serializer/)
+          end
+        end
+      end
+    end
+
+    context 'singular association' do
+      let(:level0_serializer_class) do
+        module Serializer13
+          class CategorySerializer < BaseTestSerializer
+            lazy_has_many :category_followers
+          end
+
+          class BlogPostSerializer < BaseTestSerializer
+            lazy_belongs_to :category, serializer: CategorySerializer
+
+            attribute(:lazy_category_id) { lazy_dig(:category).id }
+            attribute(:lazy_category_follower_ids) { lazy_dig(:category, :category_followers).map(&:id) }
+          end
+
+          class UserSerializer < BaseTestSerializer
+            lazy_has_many :blog_posts, serializer: BlogPostSerializer
+          end
+        end
+
+        Serializer13::UserSerializer
+      end
+
+      let(:includes) { ["blog_posts"] }
+      let(:blog_post) { level1_records.first }
+      let(:json_blog_post) do
+        json
+          .dig(:user, :blog_posts)
+          .detect { |json_blog_post| json_blog_post[:id] == blog_post.id }
+      end
+
+      it 'prevents N+1 queries' do
+        expect { json }
+          .to make_database_queries(count: 1, matching: 'blog_posts')
+          .and make_database_queries(count: 1, matching: 'categories')
+          .and make_database_queries(count: 1, matching: 'category_followers')
+      end
+
+      it 'digs singular object for singular association' do
+        json_category_id = json_blog_post[:lazy_category_id]
+        expect(json_category_id).to eq(blog_post.category_id)
+      end
+
+      it 'digs collection of objects for nested collection association' do
+        json_lazy_category_follower_ids = json_blog_post[:lazy_category_follower_ids]
+        category_followers = level3_records.select { |cf| cf.category_id == blog_post.category_id }
+
+        expect(json_lazy_category_follower_ids).to match_array(category_followers.map(&:id))
+      end
+    end
   end
 end

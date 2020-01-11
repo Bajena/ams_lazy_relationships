@@ -39,15 +39,7 @@ module AmsLazyRelationships::Core
       @lazy_relationships[name] = lrm
 
       define_method :"lazy_#{name}" do
-        # We need to evaluate the promise right before serializer tries
-        # to touch it. Otherwise the various side effects can happen:
-        # 1. AMS will attempt to serialize nil values with a specific V1 serializer
-        # 2. `lazy_association ? 'exists' : 'missing'` expression will always
-        #     equal to 'exists'
-        # 3. `lazy_association&.id` expression can raise NullPointer exception
-        #
-        # Calling `__sync` will evaluate the promise.
-        self.class.send(:load_lazy_relationship, lrm, object).__sync
+        self.class.send(:load_lazy_relationship, name, object)
       end
     end
 
