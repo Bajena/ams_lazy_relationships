@@ -63,8 +63,8 @@ class UserSerializer < BaseSerializer
   
   # The previous one is a shorthand for the following lines:
   lazy_relationship :blog_posts, loader: AmsLazyRelationships::Loaders::Association.new("User", :blog_posts)
-  has_many :blog_posts, serializer: BlogPostSerializer do
-    lazy_blog_posts
+  has_many :blog_posts, serializer: BlogPostSerializer do |serializer|
+    serializer.lazy_blog_posts
   end
    
   lazy_has_one :poro_model, loader: AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object) }
@@ -118,8 +118,8 @@ Sometimes it may happen that you need to process the relationship before renderi
 
 ```ruby
 class BlogPostSerializer < BaseSerializer
-  lazy_has_many :comments do
-    lazy_comments.map(&:decorate)
+  lazy_has_many :comments do |serializer|
+    serializer.lazy_comments.map(&:decorate)
    end
 end
 ```
