@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require "active_model_serializers"
 require "benchmark"
 require "benchmark/memory"
 
