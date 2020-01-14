@@ -7,7 +7,9 @@ language: ruby
 gemfile:
   - gemfiles/ams_0.10.0.rc4.gemfile
   - gemfiles/ams_0.10.2.gemfile
+  - gemfiles/ams_0.10.3.gemfile
   - gemfiles/ams_0.10.8.gemfile
+  - gemfiles/ams_0.10.10.gemfile
 cache: bundler
 rvm:
   - 2.5.3
