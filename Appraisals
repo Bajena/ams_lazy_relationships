@@ -1,5 +1,5 @@
-appraise "ams-0.10.0.rc4" do
-  gem "active_model_serializers", "0.10.0.rc4"
+appraise "ams-0.10.0" do
+  gem "active_model_serializers", "0.10.0"
 end
 
 appraise "ams-0.10.2" do
