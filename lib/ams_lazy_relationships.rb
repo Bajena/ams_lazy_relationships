@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "batch-loader"
+require "active_model_serializers"
 
 require "ams_lazy_relationships/version"
 require "ams_lazy_relationships/loaders"
