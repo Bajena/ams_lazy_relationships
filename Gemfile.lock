@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     ams_lazy_relationships (0.2.0)
-      active_model_serializers (~> 0.10)
+      active_model_serializers
       batch-loader (~> 1)
 
 GEM
