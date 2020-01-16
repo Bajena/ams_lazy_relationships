@@ -129,6 +129,15 @@ RSpec.describe AmsLazyRelationships::Core do
       it "renders correct results" do
         expect(relationship_level1_ids).to match_array(level1_records.map(&:id))
       end
+
+      context "association populated by accepts_nested_attributes_for" do
+        let(:user) { User.create!(blog_posts_attributes: [{title: 'Foo'}]) }
+        let(:level1_records) { [] }
+
+        it "avoids the duplication of associated records" do
+          expect(relationship_level1_ids.size).to eq(1)
+        end
+      end
     end
 
     context "1 level nesting requested" do

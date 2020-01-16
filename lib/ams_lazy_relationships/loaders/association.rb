@@ -45,9 +45,19 @@ module AmsLazyRelationships
         # in a decorator and non-wrapped). In this case Associations::Preloader
         # stores duplicated records in has_many relationships for some reason.
         # Calling uniq(&:id) solves the problem.
-        records.uniq(&:id).reject do |r|
-          r.association(association_name).loaded?
-        end
+        #
+        # One more case when duplicated records appear in has_many relationships
+        # is the recent assignation to `accept_nested_attributes_for` setter.
+        # ActiveRecord will not mark the association as `loaded` but in same
+        # time will keep internal representation of the nested records created
+        # by `accept_nested_attributes_for`. Then Associations::Preloader is
+        # going to merge internal state of associated records with the same
+        # records recently stored in DB. `r.association(association_name).reset`
+        # effectively fixes that.
+        records.
+          uniq(&:id).
+          reject { |r| r.association(association_name).loaded? }.
+          each { |r| r.association(association_name).reset }
       end
     end
   end
