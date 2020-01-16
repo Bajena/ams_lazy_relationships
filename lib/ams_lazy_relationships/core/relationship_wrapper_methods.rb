@@ -19,7 +19,7 @@ module AmsLazyRelationships::Core
         define_singleton_method(
           "lazy_#{relationship_type}"
         ) do |relationship_name, options = {}, &block|
-          send(:define_lazy_association, relationship_type, relationship_name, options, block)
+          define_lazy_association(relationship_type, relationship_name, options, block)
         end
       end
     end
@@ -29,11 +29,20 @@ module AmsLazyRelationships::Core
 
       real_relationship_options = options.except(*lazy_relationship_option_keys)
 
-      block ||= lambda do |serializer|
-        serializer.public_send("lazy_#{name}")
-      end
+      public_send(type, name.to_sym, real_relationship_options) do |serializer|
+        block_value = instance_exec(serializer, &block) if block
 
-      public_send(type, name.to_sym, real_relationship_options, &block)
+        if block && block_value != :nil
+          # respect the custom finder for lazy association
+          # @see https://github.com/rails-api/active_model_serializers/blob/v0.10.10/lib/active_model/serializer/reflection.rb#L165-L168
+          block_value
+        else
+          # provide default lazy association finder in a form of lambda,
+          # in order to play nice with possible `include_data` setting.
+          # @see lib/ams_lazy_relationships/extensions/reflection.rb
+          serializer.method("lazy_#{name}")
+        end
+      end
 
       lazy_relationship(name, options.slice(*lazy_relationship_option_keys))
     end

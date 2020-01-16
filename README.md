@@ -64,7 +64,9 @@ class UserSerializer < BaseSerializer
   # The previous one is a shorthand for the following lines:
   lazy_relationship :blog_posts, loader: AmsLazyRelationships::Loaders::Association.new("User", :blog_posts)
   has_many :blog_posts, serializer: BlogPostSerializer do |serializer|
-    serializer.lazy_blog_posts
+    # non-proc custom finder will work as well, but it can produce redundant sql
+    # queries, please see [Example 2: Modifying the relationship before rendering](#example-2-modifying-the-relationship-before-rendering)
+    -> { serializer.lazy_blog_posts }
   end
    
   lazy_has_one :poro_model, loader: AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object) }
@@ -119,7 +121,40 @@ Sometimes it may happen that you need to process the relationship before renderi
 ```ruby
 class BlogPostSerializer < BaseSerializer
   lazy_has_many :comments do |serializer|
+    -> { serializer.lazy_comments.map(&:decorate) }
+   end
+end
+```
+
+Despite the fact that non-block custom finder such as
+
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_has_many :comments do |serializer|
     serializer.lazy_comments.map(&:decorate)
+   end
+end
+```
+
+will work still, it's better to implement it in a form of lambda, in order to avoid redundant SQL queries when `include_data` AMS setting appears to be `false`:
+
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_has_many :comments do |serializer|
+    include_data :if_sideloaded
+    -> { serializer.lazy_comments.map(&:decorate) }
+   end
+end
+```
+
+Feel free to skip custom lazy finder for association if your goal is just to define `include_data` setting and/or to specify some links and metas:
+
+```ruby
+class BlogPostSerializer < BaseSerializer
+  lazy_has_many :comments do
+    include_data :if_sideloaded
+    link :self, 'a link'
+    meta name: 'Dan Brown'
    end
 end
 ```

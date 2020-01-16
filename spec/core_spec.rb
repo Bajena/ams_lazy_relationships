@@ -875,4 +875,147 @@ RSpec.describe AmsLazyRelationships::Core do
       end
     end
   end
+
+  describe 'include_data AMS setting' do
+    shared_examples 'lazy loader when custom finder is specified' do
+      let(:adapter_class) { json_api_adapter_class }
+      let(:includes) { ['blog_posts'] }
+      let(:blog_post_data) { json.dig(:data, :relationships, :blog_posts, :data) }
+
+      it 'loads the association' do
+        expect { json }
+          .to make_database_queries(count: 1, matching: 'blog_posts')
+
+        expect(blog_post_data).to be_present
+      end
+    end
+
+    context 'proc-like custom finder' do
+      let(:level0_serializer_class) do
+        module Serializer14
+          class User1Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts do |serializer|
+              -> { serializer.lazy_blog_posts }
+            end
+          end
+        end
+
+        Serializer14::User1Serializer
+      end
+
+      include_examples 'lazy loader when custom finder is specified'
+    end
+
+    context 'non-proc custom finder' do
+      let(:level0_serializer_class) do
+        module Serializer14
+          class User2Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts do |serializer|
+              serializer.lazy_blog_posts
+            end
+          end
+        end
+
+        Serializer14::User2Serializer
+      end
+
+      include_examples 'lazy loader when custom finder is specified'
+    end
+
+    next unless AMS_VERSION >= Gem::Version.new("0.10.3")
+
+    shared_examples 'lazy loader when include_data option is set' do
+      let(:adapter_class) { json_api_adapter_class }
+      let(:includes) { ['blog_posts'] }
+      let(:category_data) { json.dig(:included, 0, :relationships, :category, :data) }
+
+      it 'does not fire unnecessary SQL query' do
+        expect { json }
+          .to make_database_queries(count: 1, matching: 'blog_posts')
+          .and make_database_queries(count: 0, matching: 'categories')
+
+        expect(category_data).to be_nil
+      end
+
+      context 'when sideloaded' do
+        let(:includes) { ['blog_posts.category'] }
+
+        it 'fires single SQL query' do
+          expect { json }
+            .to make_database_queries(count: 1, matching: 'blog_posts')
+            .and make_database_queries(count: 1, matching: 'categories')
+
+          expect(category_data).to be_present
+        end
+      end
+    end
+
+    context 'include_data disabled globally' do
+      let(:level0_serializer_class) do
+        module Serializer15
+          class BlogPost1Serializer < BaseTestSerializer
+            lazy_belongs_to :category
+          end
+
+          class User1Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts, serializer: BlogPost1Serializer
+          end
+        end
+
+        Serializer15::User1Serializer
+      end
+
+      around do |example|
+        backup = ActiveModel::Serializer.config.include_data_default
+        ActiveModel::Serializer.config.include_data_default = :if_sideloaded
+
+        example.run
+
+        ActiveModel::Serializer.config.include_data_default = backup
+      end
+
+      include_examples 'lazy loader when include_data option is set'
+    end
+
+    context 'include_data disabled locally with custom finder' do
+      let(:level0_serializer_class) do
+        module Serializer15
+          class BlogPost2Serializer < BaseTestSerializer
+            lazy_belongs_to :category do |serializer|
+              include_data :if_sideloaded
+              -> { serializer.lazy_category }
+            end
+          end
+
+          class User2Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts, serializer: BlogPost2Serializer
+          end
+        end
+
+        Serializer15::User2Serializer
+      end
+
+      include_examples 'lazy loader when include_data option is set'
+    end
+
+    context 'include_data disabled locally without custom finder' do
+      let(:level0_serializer_class) do
+        module Serializer15
+          class BlogPost3Serializer < BaseTestSerializer
+            lazy_belongs_to :category do
+              include_data :if_sideloaded
+            end
+          end
+
+          class User3Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts, serializer: BlogPost3Serializer
+          end
+        end
+
+        Serializer15::User3Serializer
+      end
+
+      include_examples 'lazy loader when include_data option is set'
+    end
+  end
 end
