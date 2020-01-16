@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.3.0](https://github.com/Bajena/ams_lazy_relationships/tree/v0.3.0) (2020-01-16)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.2.0...v0.3.0)
+
+**Merged pull requests:**
+
+- Fix association duplicates after accepts\_nested\_attributes\_for assignation [\#50](https://github.com/Bajena/ams_lazy_relationships/pull/50) ([stokarenko](https://github.com/stokarenko))
+- Skip active\_support as redundant dependency [\#49](https://github.com/Bajena/ams_lazy_relationships/pull/49) ([stokarenko](https://github.com/stokarenko))
+- Test against AMS v0.10.0.rc4 [\#48](https://github.com/Bajena/ams_lazy_relationships/pull/48) ([stokarenko](https://github.com/stokarenko))
+- Skip redundant queries when include\_data is disabled [\#47](https://github.com/Bajena/ams_lazy_relationships/pull/47) ([stokarenko](https://github.com/stokarenko))
+- Adjust tested ams version [\#46](https://github.com/Bajena/ams_lazy_relationships/pull/46) ([stokarenko](https://github.com/stokarenko))
+- Fix documentation for blocked relationships [\#45](https://github.com/Bajena/ams_lazy_relationships/pull/45) ([stokarenko](https://github.com/stokarenko))
+
 ## [v0.2.0](https://github.com/Bajena/ams_lazy_relationships/tree/v0.2.0) (2020-01-11)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.1.5...v0.2.0)
 
