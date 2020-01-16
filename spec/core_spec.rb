@@ -868,6 +868,51 @@ RSpec.describe AmsLazyRelationships::Core do
   end
 
   describe 'include_data AMS setting' do
+    shared_examples 'lazy loader when custom finder is specified' do
+      let(:adapter_class) { json_api_adapter_class }
+      let(:includes) { ['blog_posts'] }
+      let(:blog_post_data) { json.dig(:data, :relationships, :blog_posts, :data) }
+
+      it 'loads the association' do
+        expect { json }
+          .to make_database_queries(count: 1, matching: 'blog_posts')
+
+        expect(blog_post_data).to be_present
+      end
+    end
+
+    context 'proc-like custom finder' do
+      let(:level0_serializer_class) do
+        module Serializer14
+          class User1Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts do |serializer|
+              -> { serializer.lazy_blog_posts }
+            end
+          end
+        end
+
+        Serializer14::User1Serializer
+      end
+
+      include_examples 'lazy loader when custom finder is specified'
+    end
+
+    context 'non-proc custom finder' do
+      let(:level0_serializer_class) do
+        module Serializer14
+          class User2Serializer < BaseTestSerializer
+            lazy_has_many :blog_posts do |serializer|
+              serializer.lazy_blog_posts
+            end
+          end
+        end
+
+        Serializer14::User2Serializer
+      end
+
+      include_examples 'lazy loader when custom finder is specified'
+    end
+
     next unless AMS_VERSION >= Gem::Version.new("0.10.3")
 
     shared_examples 'lazy loader when include_data option is set' do
@@ -898,7 +943,7 @@ RSpec.describe AmsLazyRelationships::Core do
 
     context 'include_data disabled globally' do
       let(:level0_serializer_class) do
-        module Serializer14
+        module Serializer15
           class BlogPost1Serializer < BaseTestSerializer
             lazy_belongs_to :category
           end
@@ -908,7 +953,7 @@ RSpec.describe AmsLazyRelationships::Core do
           end
         end
 
-        Serializer14::User1Serializer
+        Serializer15::User1Serializer
       end
 
       around do |example|
@@ -925,7 +970,7 @@ RSpec.describe AmsLazyRelationships::Core do
 
     context 'include_data disabled locally with custom finder' do
       let(:level0_serializer_class) do
-        module Serializer14
+        module Serializer15
           class BlogPost2Serializer < BaseTestSerializer
             lazy_belongs_to :category do |serializer|
               include_data :if_sideloaded
@@ -938,7 +983,7 @@ RSpec.describe AmsLazyRelationships::Core do
           end
         end
 
-        Serializer14::User2Serializer
+        Serializer15::User2Serializer
       end
 
       include_examples 'lazy loader when include_data option is set'
@@ -946,7 +991,7 @@ RSpec.describe AmsLazyRelationships::Core do
 
     context 'include_data disabled locally without custom finder' do
       let(:level0_serializer_class) do
-        module Serializer14
+        module Serializer15
           class BlogPost3Serializer < BaseTestSerializer
             lazy_belongs_to :category do
               include_data :if_sideloaded
@@ -958,7 +1003,7 @@ RSpec.describe AmsLazyRelationships::Core do
           end
         end
 
-        Serializer14::User3Serializer
+        Serializer15::User3Serializer
       end
 
       include_examples 'lazy loader when include_data option is set'
