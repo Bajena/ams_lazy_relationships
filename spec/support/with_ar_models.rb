@@ -10,6 +10,7 @@ module WithArModels
         before_create { self.id = SecureRandom.uuid }
         has_many :comments
         has_many :blog_posts
+        accepts_nested_attributes_for :blog_posts
       end
     end
 

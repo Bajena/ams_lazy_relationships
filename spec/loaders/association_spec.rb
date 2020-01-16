@@ -256,6 +256,15 @@ RSpec.describe AmsLazyRelationships::Loaders::Association do
         expect(t2).to eq([comment2])
       end
     end
+
+    context "association populated by accepts_nested_attributes_for" do
+      let(:record) { User.create!(blog_posts_attributes: [{title: 'Foo'}]) }
+      let(:loader) { described_class.new("User", :blog_posts) }
+
+      it "avoids the duplication of associated records" do
+        expect(loader.load(record).size).to eq(1)
+      end
+    end
   end
 
   context "when loading multiple lazy associations" do
