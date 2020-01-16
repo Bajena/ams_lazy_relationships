@@ -3,7 +3,7 @@
 # There is a general problem inside AMS related to custom association finder
 # combined with `include_data` setting:
 #
-#   class BlogPost3Serializer < BaseTestSerializer
+#   class BlogPostSerializer < BaseSerializer
 #     belongs_to :category do
 #       include_data :if_sideloaded
 #       object.categories.last
