@@ -27,7 +27,7 @@
 # defines instant (not a kind of AR::Relation) custom association finder.
 #
 # Described problem is a very specific use case for pure AMS applications.
-# The bad news is that `ams_lazy_relationships` is always utilize the
+# The bad news is that `ams_lazy_relationships` always utilizes the
 # association block -
 # https://github.com/Bajena/ams_lazy_relationships/blob/v0.2.0/lib/ams_lazy_relationships/core/relationship_wrapper_methods.rb#L32-L36
 #
