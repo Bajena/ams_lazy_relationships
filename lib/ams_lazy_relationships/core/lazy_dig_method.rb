@@ -69,7 +69,8 @@ module AmsLazyRelationships::Core
       serializer&.send(
         :load_lazy_relationship,
         relation_name,
-        object
+        object,
+        scope
       )
     end
 

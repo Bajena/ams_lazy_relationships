@@ -81,7 +81,7 @@ module AmsLazyRelationships::Core
       end
     end
 
-    def deep_init_for_yielded_record(batch_record, lrm, level)
+    def deep_init_for_yielded_record(batch_record, scope, lrm, level)
       serializer = lazy_serializer_for(batch_record, lrm: lrm)
       return unless serializer
 
