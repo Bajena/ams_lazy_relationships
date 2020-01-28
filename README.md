@@ -14,7 +14,7 @@ evaluated only when they're requested.
 E.g. when including `blog_posts.user`: instead of loading a user for each blog post separately it'll gather the blog posts and load all their users at once when including the users in the response.
 
 #### How is it better than Rails' includes/joins methods?
-In many cases it's fine to use [`includes`](https://apidock.com/rails/ActiveRecord/QueryMethods/includes) method provided by Rails. 
+In many cases it's fine to use [`includes`](https://apidock.com/rails/ActiveRecord/QueryMethods/includes) method provided by Rails.
 There are a few problems with `includes` approach though:
 - It loads all the records provided in the arguments hash. Often you may not need all the nested records to serialize the data you want. `AmsLazyRelationships` will load only the data you need thanks to lazy evaluation.
 - When the app gets bigger and bigger you'd need to update all the `includes` statements across your app to prevent the N+1 queries problem which quickly becomes impossible.
@@ -41,7 +41,7 @@ class BaseSerializer < ActiveModel::Serializer
 end
 ```
 
-4. **Important:** 
+4. **Important:**
 This gem uses `BatchLoader` heavily. I highly recommend to clear the batch loader's cache between HTTP requests.
 To do so add a following middleware:
 `config.middleware.use BatchLoader::Middleware` to your app's `application.rb`.
@@ -55,12 +55,12 @@ Adding the `AmsLazyRelationships::Core` module lets you define lazy relationship
 class UserSerializer < BaseSerializer
   # Short version - preloads a specified ActiveRecord relationship by default
   lazy_has_many :blog_posts
-  
+
   # Works same as the previous one, but the loader option is specified explicitly
   lazy_has_many :blog_posts,
                 serializer: BlogPostSerializer,
                 loader: AmsLazyRelationships::Loaders::Association.new("User", :blog_posts)
-  
+
   # The previous one is a shorthand for the following lines:
   lazy_relationship :blog_posts, loader: AmsLazyRelationships::Loaders::Association.new("User", :blog_posts)
   has_many :blog_posts, serializer: BlogPostSerializer do |serializer|
@@ -68,22 +68,22 @@ class UserSerializer < BaseSerializer
     # queries, please see [Example 2: Modifying the relationship before rendering](#example-2-modifying-the-relationship-before-rendering)
     -> { serializer.lazy_blog_posts }
   end
-   
+
   lazy_has_one :poro_model, loader: AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object) }
-  
+
   lazy_belongs_to :account, loader: AmsLazyRelationships::Loaders::SimpleBelongsTo.new("Account")
-  
+
   lazy_has_many :comment, loader: AmsLazyRelationships::Loaders::SimpleHasMany.new("Comment", foreign_key: :user_id)
 end
 ```
 
-As you may have already noticed the gem makes use of various loader classes. 
+As you may have already noticed the gem makes use of various loader classes.
 
 I've implemented the following ones for you:
 - `AmsLazyRelationships::Loaders::Association` - Batch loads a ActiveRecord association (has_one/has_many/has_many-through/belongs_to). This is a deafult loader in case you don't specify a `loader` option in your serializer's lazy relationship.
 E.g. in order to lazy load user's blog posts use a following loader: `AmsLazyRelationships::Loaders::Association.new("User", :blog_posts)`.
 
-- `AmsLazyRelationships::Loaders::SimpleBelongsTo` - Batch loads ActiveRecord models using a foreign key method called on a serialized object. E.g. `AmsLazyRelationships::Loaders::SimpleBelongsTo.new("Account")` called on users will gather their `account_id`s and fire one query to get all accounts at once instead of loading an account per user separately. 
+- `AmsLazyRelationships::Loaders::SimpleBelongsTo` - Batch loads ActiveRecord models using a foreign key method called on a serialized object. E.g. `AmsLazyRelationships::Loaders::SimpleBelongsTo.new("Account")` called on users will gather their `account_id`s and fire one query to get all accounts at once instead of loading an account per user separately.
 This loader can be useful e.g. when the serialized object is not an ActiveRecord model.
 
 - `AmsLazyRelationships::Loaders::SimpleHasMany` - Batch loads ActiveRecord records belonging to given record by foreign key. E.g. `AmsLazyRelationships::Loaders::SimpleHasMany.new("BlogPosts", foreign_key: :user_id)` called on users will  and fire one query to gather all blog posts for the users at once instead of loading an the blog posts per user separately.
@@ -93,7 +93,7 @@ This loader can be useful e.g. when the serialized object is not an ActiveRecord
 You can use it like this: `AmsLazyRelationships::Loaders::Direct.new(:poro_model) { |object| PoroModel.new(object)`.
 
 The abovementioned loaders are mostly useful when using ActiveRecord, but there should be no problem building a new loader for different frameworks.
-If you're missing a loader you can create an issue or create your own loader taking the existing ones as an example. 
+If you're missing a loader you can create an issue or [create your own loader](#custom-lazy-loader-class).
 
 ### More examples
 Here are a few use cases for the lazy relationships. Hopefully they'll let you understand a bit more how the gem works.
@@ -177,7 +177,7 @@ This one is interesting. It may happen that the root record is not an ActiveReco
 Imagine that `BlogPost` is not an AR model and `Comment` is a standard AR model. The lazy relationship would look like this:
 ```ruby
 class BlogPostSerializer < BaseSerializer
-  lazy_has_many :comments, 
+  lazy_has_many :comments,
     loader: AmsLazyRelationships::Loaders::SimpleHasMany.new(
       "Comment", foreign_key: :blog_post_id
     )
@@ -191,7 +191,7 @@ For example imagine that your `BlogPost` serializer is supposed to render `autho
 ```ruby
 class BlogPostSerializer < BaseSerializer
   lazy_relationship :author
-  
+
   attribute :author_name do
     lazy_author.name
   end
@@ -216,9 +216,78 @@ class BlogPostSerializer < BaseSerializer
 end
 ```
 
+## Custom lazy loader class
+This gem covers most of the typical cases causing N+1 queries when working with ActiveRecord. However, it may happen that you need to optimize a more complex AR relationship or even batch load records from another data store.
+In this case you should consider writing a custom lazy loader class.
+
+A custom loader class should inherit from `AmsLazyRelationships::Loaders::Base` and implement following methods:
+- `load_data(records, loader, scope)` - Loads required data for all records gathered by the batch loader, assigns data to records by calling the `loader` lambda and returns the list of loaded relationship records. Its params are:
+  - `records [Array<Object>]` Array of all gathered records.
+  - `loader [Proc]` Proc used for assigning the batch loaded data to records. First argument is the record and the second is the data loaded for it.
+  - `scope [Object]` Serialization scope object from controller. In a typical use case it's a `current_user` object.
+- `batch_key(record)` - Computes a batching key string based on currently evaluated record. Its argument is:
+  - `record [Object]` - A record for which we're batch loading the relationship.
+
+### Example of a custom loader
+Imagine you're writing a clone of [medium.com](https://medium.com/) and have a requirement that lite users can only see their own comments in blog posts.
+Without lazy loaders it'd look like this:
+
+```ruby
+class BlogPostsController
+  serialization_scope :current_user
+
+  def index
+     render json: BlogPost.all
+  end
+end
+
+class BlogPostSerializer
+  has_many :comments do
+    current_user.premium? ? object.comments : object.comments.where(author: current_user)
+  end
+end
+```
+
+If you'd like to get rid of N+1 queries using lazy relationships you can write a custom lazy loader like the one below:
+```ruby
+class CommentsLoader < AmsLazyRelationships::Loaders::Base
+  def load_data(blog_posts, loader, current_user)
+    blog_post_ids = blog_posts.map(&:id)
+    comments = Comment.where(
+      blog_post_id: blog_post_ids
+    )
+    comments = comments.where(author: current_user) unless current_user.premium?
+
+    resolve(blog_posts, comments, loader)
+
+    comments
+  end
+
+  def resolve(blog_posts, comments, loader)
+    blog_posts = blog_posts.group_by { |d| d.blog_post_id }
+
+    comments.each do |c|
+      loader.call(c, data[c.id] || [])
+    end
+  end
+
+  # Record param is not necessary in this case
+  def batch_key(_record)
+    "lazy_comments"
+  end
+end
+
+class BlogPostSerializer
+  lazy_has_many :comments, loader: CommentsLoader
+end
+```
+
+It should be more clear now. Did I explain it clearly enough?
+I could probably add something to the documentation as well...
+
 ## Performance comparison with vanilla AMS
 
-In general the bigger and more complex your serialized records hierarchy is and the more latency you have in your DB the more you'll benefit from using this gem. 
+In general the bigger and more complex your serialized records hierarchy is and the more latency you have in your DB the more you'll benefit from using this gem.
 Example results for average size records tree (10 blog posts -> 10 comments each -> 1 user per comment, performed on local in-memory SQLite DB) are:
 
 ### Time:
