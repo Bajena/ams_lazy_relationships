@@ -77,7 +77,7 @@ GEM
     imagen (0.1.5)
       parser (>= 2.5, != 2.5.1.1)
     jaro_winkler (1.5.2)
-    json (2.1.0)
+    json (2.3.1)
     jsonapi-renderer (0.2.2)
     loofah (2.3.1)
       crass (~> 1.0.2)
