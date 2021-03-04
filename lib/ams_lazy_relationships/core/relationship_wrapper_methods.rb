@@ -44,7 +44,7 @@ module AmsLazyRelationships::Core
         end
       end
 
-      lazy_relationship(name, options.slice(*lazy_relationship_option_keys))
+      lazy_relationship(name, load_for: options[:load_for], loader: options[:loader])
     end
   end
 end
