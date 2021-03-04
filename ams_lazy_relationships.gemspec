@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "active_model_serializers"
-  spec.add_dependency "batch-loader", "~> 1"
+  spec.add_dependency "batch-loader", "~> 2"
 
   spec.add_development_dependency "activerecord"
   # A Ruby library for testing against different versions of dependencies
