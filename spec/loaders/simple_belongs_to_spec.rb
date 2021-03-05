@@ -14,7 +14,7 @@ RSpec.describe AmsLazyRelationships::Loaders::SimpleBelongsTo do
 
     context "when the foreign_key is nil" do
       before do
-        record.update_attribute(:blog_post_id, nil)
+        record.update(blog_post_id: nil)
       end
 
       it "does not call DB" do
