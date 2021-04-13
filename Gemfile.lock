@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     ams_lazy_relationships (0.3.0)
-      active_model_serializers
+      active_model_serializers (>= 0.10.0.rc4)
       batch-loader (~> 1)
 
 GEM
@@ -21,9 +21,9 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    active_model_serializers (0.10.9)
-      actionpack (>= 4.1, < 6)
-      activemodel (>= 4.1, < 6)
+    active_model_serializers (0.10.12)
+      actionpack (>= 4.1, < 6.2)
+      activemodel (>= 4.1, < 6.2)
       case_transform (>= 0.2)
       jsonapi-renderer (>= 0.1.1.beta1, < 0.3)
     activemodel (5.2.2)
@@ -45,7 +45,7 @@ GEM
       thor (>= 0.14.0)
     arel (9.0.0)
     ast (2.4.0)
-    batch-loader (1.4.1)
+    batch-loader (1.5.0)
     benchmark-memory (0.1.2)
       memory_profiler (~> 0.9)
     builder (3.2.3)
@@ -201,4 +201,4 @@ DEPENDENCIES
   with_model (~> 2.0)
 
 BUNDLED WITH
-   1.17.3
+   2.2.15
