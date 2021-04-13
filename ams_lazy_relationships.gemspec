@@ -57,5 +57,8 @@ Gem::Specification.new do |spec|
   # Dynamically build an Active Record model (with table) within a test context
   spec.add_development_dependency "with_model", "~> 2.0"
 
+  # Implicit dependency of AMS - used to be a part of Rails
+  spec.add_development_dependency "thread_safe"
+
   spec.add_development_dependency "benchmark-memory", "~> 0.1"
 end

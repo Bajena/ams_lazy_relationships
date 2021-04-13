@@ -197,6 +197,7 @@ DEPENDENCIES
   simplecov
   simplecov-lcov
   sqlite3
+  thread_safe
   undercover
   with_model (~> 2.0)
 
