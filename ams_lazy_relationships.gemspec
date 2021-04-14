@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "github_changelog_generator"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "pry-nav"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec-rails", "~> 3.5"
   spec.add_development_dependency "rubocop", "= 0.61.0"
