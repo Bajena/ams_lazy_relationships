@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "active_model_serializers"
+  spec.add_dependency "active_model_serializers", ">= 0.10.0.rc4"
   spec.add_dependency "batch-loader", "~> 1"
 
   spec.add_development_dependency "activerecord"
@@ -56,6 +56,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "undercover"
   # Dynamically build an Active Record model (with table) within a test context
   spec.add_development_dependency "with_model", "~> 2.0"
+
+  # Implicit dependency of AMS - used to be a part of Rails
+  spec.add_development_dependency "thread_safe"
 
   spec.add_development_dependency "benchmark-memory", "~> 0.1"
 end
