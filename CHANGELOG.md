@@ -1,5 +1,16 @@
 # Change Log
 
+## [v0.3.1](https://github.com/Bajena/ams_lazy_relationships/tree/v0.3.1) (2021-04-14)
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.3.0...v0.3.1)
+
+**Closed issues:**
+
+- NameError: uninitialized constant ActiveModel::Serializer::Reflection [\#59](https://github.com/Bajena/ams_lazy_relationships/issues/59)
+
+**Merged pull requests:**
+
+- Lock minimum AMS version to 0.10.0.rc4 [\#60](https://github.com/Bajena/ams_lazy_relationships/pull/60) ([Bajena](https://github.com/Bajena))
+
 ## [v0.3.0](https://github.com/Bajena/ams_lazy_relationships/tree/v0.3.0) (2020-01-16)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.2.0...v0.3.0)
 
