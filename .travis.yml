@@ -15,8 +15,17 @@ gemfile:
   - gemfiles/batch_loader_2.gemfile
 cache: bundler
 rvm:
+  - 2.5.3
   - 3.0.0
-  - 3.0.1
+jobs:
+  # Following AMS versions are locked to AR < 6 which isn't compatible with Ruby 3
+  exclude:
+  - rvm: 3.0.0
+    gemfile: gemfiles/ams_0.10.2.gemfile
+  - rvm: 3.0.0
+    gemfile: gemfiles/ams_0.10.3.gemfile
+  - rvm: 3.0.0
+    gemfile: gemfiles/ams_0.10.8.gemfile
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
