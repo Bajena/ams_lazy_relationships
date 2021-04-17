@@ -162,7 +162,7 @@ GEM
       rake (>= 0.8.7)
       thor (~> 1.0)
     rainbow (3.0.0)
-    rake (10.5.0)
+    rake (13.0.3)
     retriable (3.1.2)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -235,7 +235,7 @@ DEPENDENCIES
   github_changelog_generator
   pry
   pry-nav
-  rake (~> 10.0)
+  rake (~> 13.0)
   rspec (~> 3.0)
   rspec-rails (~> 3.5)
   rubocop (= 0.61.0)
