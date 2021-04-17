@@ -21,3 +21,11 @@ end
 appraise "ams-0.10.10" do
   gem "active_model_serializers", "0.10.10"
 end
+
+appraise "batch-loader-1" do
+  gem "batch-loader", "~> 1"
+end
+
+appraise "batch-loader-2" do
+  gem "batch-loader", "~> 2"
+end

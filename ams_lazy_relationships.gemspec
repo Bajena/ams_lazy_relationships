@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "active_model_serializers", ">= 0.10.0.rc4"
-  spec.add_dependency "batch-loader", "~> 1"
+  spec.add_dependency "batch-loader"
 
   spec.add_development_dependency "activerecord"
   # A Ruby library for testing against different versions of dependencies
@@ -55,7 +55,7 @@ Gem::Specification.new do |spec|
   # Detect untested code blocks in recent changes
   spec.add_development_dependency "undercover"
   # Dynamically build an Active Record model (with table) within a test context
-  spec.add_development_dependency "with_model", "~> 2.0"
+  spec.add_development_dependency "with_model"
 
   # Implicit dependency of AMS - used to be a part of Rails
   spec.add_development_dependency "thread_safe"

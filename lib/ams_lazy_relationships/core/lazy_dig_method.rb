@@ -52,7 +52,10 @@ module AmsLazyRelationships::Core
     private
 
     def lazy_dig_relationship!(relation_name, relationships)
-      relationships[:data].map! do |serializer:, object:|
+      relationships[:data].map! do |data|
+        serializer = data[:serializer]
+        object = data[:object]
+
         next_objects = lazy_dig_next_objects!(relation_name, serializer, object)
         next unless next_objects
 
