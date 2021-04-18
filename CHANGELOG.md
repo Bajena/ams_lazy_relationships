@@ -1,5 +1,16 @@
 # Change Log
 
+## [v0.3.2](https://github.com/Bajena/ams_lazy_relationships/tree/v0.3.2) (2021-04-18)
+
+[Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.3.1...v0.3.2)
+
+**Merged pull requests:**
+
+- Support Ruby 3 [\#64](https://github.com/Bajena/ams_lazy_relationships/pull/64) ([Bajena](https://github.com/Bajena))
+- Bump nokogiri from 1.10.5 to 1.11.3 [\#63](https://github.com/Bajena/ams_lazy_relationships/pull/63) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump json from 2.1.0 to 2.5.1 [\#61](https://github.com/Bajena/ams_lazy_relationships/pull/61) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update rake requirement from ~\> 10.0 to ~\> 13.0 [\#53](https://github.com/Bajena/ams_lazy_relationships/pull/53) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v0.3.1](https://github.com/Bajena/ams_lazy_relationships/tree/v0.3.1) (2021-04-14)
 [Full Changelog](https://github.com/Bajena/ams_lazy_relationships/compare/v0.3.0...v0.3.1)
 
