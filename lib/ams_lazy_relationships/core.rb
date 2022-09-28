@@ -50,7 +50,7 @@ module AmsLazyRelationships::Core
     def initialize(*)
       super
 
-      self.class.send(:init_all_lazy_relationships, object)
+      self.class.send(:init_all_lazy_relationships, self)
     end
   end
 end
