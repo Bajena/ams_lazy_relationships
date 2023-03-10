@@ -22,9 +22,7 @@ module AmsLazyRelationships
       attr_reader :model_class_name, :association_name
 
       def load_data(records, loader)
-        ::ActiveRecord::Associations::Preloader.new.preload(
-          records_to_preload(records), association_name
-        )
+        preload(records)
 
         data = []
         records.each do |r|
@@ -38,6 +36,19 @@ module AmsLazyRelationships
 
       def batch_key(_)
         @batch_key ||= "#{model_class_name}/#{association_name}"
+      end
+
+      def preload(records)
+        if ::ActiveRecord::VERSION::MAJOR >= 7
+          ::ActiveRecord::Associations::Preloader.new(
+            records: records_to_preload(records),
+            associations: association_name
+          ).call
+        else
+          ::ActiveRecord::Associations::Preloader.new.preload(
+            records_to_preload(records), association_name
+          )
+        end
       end
 
       def records_to_preload(records)
