@@ -53,7 +53,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov-lcov"
   spec.add_development_dependency "sqlite3"
   # Detect untested code blocks in recent changes
-  spec.add_development_dependency "undercover"
+  spec.add_development_dependency "undercover", "~> 0.4"
   # Dynamically build an Active Record model (with table) within a test context
   spec.add_development_dependency "with_model"
 

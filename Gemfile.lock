@@ -244,7 +244,7 @@ DEPENDENCIES
   simplecov-lcov
   sqlite3
   thread_safe
-  undercover
+  undercover (~> 0.4)
   with_model
 
 BUNDLED WITH
