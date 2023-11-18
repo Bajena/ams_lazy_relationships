@@ -13,6 +13,8 @@ gemfile:
   - gemfiles/ams_0.10.10.gemfile
   - gemfiles/batch_loader_1.gemfile
   - gemfiles/batch_loader_2.gemfile
+  - gemfiles/rails_6.gemfile
+  - gemfiles/rails_7.gemfile
 cache: bundler
 rvm:
   - 2.5.3
