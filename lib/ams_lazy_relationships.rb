@@ -9,4 +9,7 @@ require "ams_lazy_relationships/loaders"
 require "ams_lazy_relationships/core"
 
 module AmsLazyRelationships
+  def nobody_calls_me
+    "and I'm just a module"
+  end
 end
