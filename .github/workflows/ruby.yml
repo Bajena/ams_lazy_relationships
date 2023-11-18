@@ -1,0 +1,22 @@
+name: Rails Unit Tests
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby 3.1.2
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+      - name: Build and test with Rake
+        env:
+          RAILS_ENV: test
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+          bundle exec rspec
+          ruby -e "$(curl -s https://undercover-ci.com/uploader.rb)" -- \
+          --repo ${{ github.repository }} \
+          --commit ${{ github.workflow_sha }} \
+          --lcov coverage/lcov/ams_lazy_relationships.lcov
