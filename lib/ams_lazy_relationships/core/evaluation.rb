@@ -18,6 +18,10 @@ module AmsLazyRelationships::Core
         raise ArgumentError, "Undefined lazy '#{relation_name}' relationship for '#{name}' serializer"
       end
 
+      if lrm == "test"
+        raise "test undercover"
+      end
+
       # We need to evaluate the promise right before serializer tries
       # to touch it. Otherwise the various side effects can happen:
       # 1. AMS will attempt to serialize nil values with a specific V1 serializer
