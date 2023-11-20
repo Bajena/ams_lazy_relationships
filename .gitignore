@@ -12,3 +12,5 @@
 
 gemfiles/*.lock
 .DS_Store
+
+.idea

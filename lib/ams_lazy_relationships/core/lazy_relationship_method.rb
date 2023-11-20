@@ -39,7 +39,7 @@ module AmsLazyRelationships::Core
       @lazy_relationships[name] = lrm
 
       define_method :"lazy_#{name}" do
-        self.class.send(:load_lazy_relationship, name, object)
+        self.class.send(:load_lazy_relationship, name, self)
       end
     end
 
