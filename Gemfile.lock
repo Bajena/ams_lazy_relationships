@@ -116,6 +116,8 @@ GEM
     multi_json (1.15.0)
     nokogiri (1.15.5-x86_64-darwin)
       racc (~> 1.4)
+    nokogiri (1.15.5-x86_64-linux)
+      racc (~> 1.4)
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
@@ -138,7 +140,7 @@ GEM
       pry (>= 0.9.10, < 0.15)
     public_suffix (5.0.4)
     racc (1.7.3)
-    rack (2.2.8)
+    rack (2.2.8.1)
     rack-test (2.1.0)
       rack (>= 1.3)
     rails-dom-testing (2.2.0)
@@ -202,6 +204,7 @@ GEM
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     sqlite3 (1.6.8-x86_64-darwin)
+    sqlite3 (1.6.8-x86_64-linux)
     thor (1.3.0)
     thread_safe (0.3.6)
     timers (4.3.5)
@@ -219,6 +222,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-21
+  x86_64-linux
 
 DEPENDENCIES
   activerecord
